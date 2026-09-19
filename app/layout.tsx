@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { ReactQueryProvider } from '@/components/providers/ReactQueryProvider'
 import { Toaster } from '@/components/ui/toaster'
+import NextTopLoader from 'nextjs-toploader'
 
 export const metadata: Metadata = {
   title: 'GoalAscent — Contest & Skill Mastery Engine',
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="flex h-full flex-col">
           <ReactQueryProvider>
+            <NextTopLoader color="#FFF" height={3} showSpinner={false} />
             {children}
             <Toaster />
           </ReactQueryProvider>
@@ -37,3 +39,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
+
