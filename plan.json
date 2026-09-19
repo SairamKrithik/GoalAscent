@@ -1,0 +1,2585 @@
+{
+  "days": [
+    {
+      "day_number": 1,
+      "stage": "Week 1 — Two Pointers & Sliding Window",
+      "topic": "Two Pointers & Sliding Window",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Two Pointers & Sliding Window LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 2,
+      "stage": "Week 1 — Two Pointers & Sliding Window",
+      "topic": "Two Pointers & Sliding Window",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Two Pointers & Sliding Window LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 3,
+      "stage": "Week 1 — Two Pointers & Sliding Window",
+      "topic": "Two Pointers & Sliding Window",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Two Pointers & Sliding Window LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 4,
+      "stage": "Week 1 — Two Pointers & Sliding Window",
+      "topic": "Two Pointers & Sliding Window",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Two Pointers & Sliding Window LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 5,
+      "stage": "Week 1 — Two Pointers & Sliding Window",
+      "topic": "Two Pointers & Sliding Window",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Two Pointers & Sliding Window LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "two"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Two Pointers & Sliding Window Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "two"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 6,
+      "topic": "Virtual Contest",
+      "stage": "Week 1 — Two Pointers & Sliding Window",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 7,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 8,
+      "stage": "Week 2 — Binary Search (On Answers)",
+      "topic": "Binary Search (On Answers)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Binary Search (On Answers) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 9,
+      "stage": "Week 2 — Binary Search (On Answers)",
+      "topic": "Binary Search (On Answers)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Binary Search (On Answers) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 10,
+      "stage": "Week 2 — Binary Search (On Answers)",
+      "topic": "Binary Search (On Answers)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Binary Search (On Answers) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 11,
+      "stage": "Week 2 — Binary Search (On Answers)",
+      "topic": "Binary Search (On Answers)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Binary Search (On Answers) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 12,
+      "stage": "Week 2 — Binary Search (On Answers)",
+      "topic": "Binary Search (On Answers)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 1",
+          "difficulty_rating": 1600,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Binary Search (On Answers) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "binary"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Binary Search (On Answers) Codeforces Problem 2",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "binary"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 13,
+      "topic": "Virtual Contest",
+      "stage": "Week 2 — Binary Search (On Answers)",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 14,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 15,
+      "stage": "Week 3 — Number Theory & Math Foundations",
+      "topic": "Number Theory & Math Foundations",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Number Theory & Math Foundations LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 16,
+      "stage": "Week 3 — Number Theory & Math Foundations",
+      "topic": "Number Theory & Math Foundations",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Number Theory & Math Foundations LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 17,
+      "stage": "Week 3 — Number Theory & Math Foundations",
+      "topic": "Number Theory & Math Foundations",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Number Theory & Math Foundations LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 18,
+      "stage": "Week 3 — Number Theory & Math Foundations",
+      "topic": "Number Theory & Math Foundations",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Number Theory & Math Foundations LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 19,
+      "stage": "Week 3 — Number Theory & Math Foundations",
+      "topic": "Number Theory & Math Foundations",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Number Theory & Math Foundations LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "number"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Number Theory & Math Foundations Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "number"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 20,
+      "topic": "Virtual Contest",
+      "stage": "Week 3 — Number Theory & Math Foundations",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 21,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 22,
+      "stage": "Week 4 — Prefix Sums & Bit Manipulation",
+      "topic": "Prefix Sums & Bit Manipulation",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Prefix Sums & Bit Manipulation LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 23,
+      "stage": "Week 4 — Prefix Sums & Bit Manipulation",
+      "topic": "Prefix Sums & Bit Manipulation",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Prefix Sums & Bit Manipulation LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 24,
+      "stage": "Week 4 — Prefix Sums & Bit Manipulation",
+      "topic": "Prefix Sums & Bit Manipulation",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Prefix Sums & Bit Manipulation LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 25,
+      "stage": "Week 4 — Prefix Sums & Bit Manipulation",
+      "topic": "Prefix Sums & Bit Manipulation",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Prefix Sums & Bit Manipulation LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 26,
+      "stage": "Week 4 — Prefix Sums & Bit Manipulation",
+      "topic": "Prefix Sums & Bit Manipulation",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Prefix Sums & Bit Manipulation LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "prefix"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Prefix Sums & Bit Manipulation Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "prefix"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 27,
+      "topic": "Virtual Contest",
+      "stage": "Week 4 — Prefix Sums & Bit Manipulation",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 28,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 29,
+      "stage": "Week 5 — Trees & Basic Graphs (DFS/BFS)",
+      "topic": "Trees & Basic Graphs (DFS/BFS)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Trees & Basic Graphs (DFS/BFS) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 30,
+      "stage": "Week 5 — Trees & Basic Graphs (DFS/BFS)",
+      "topic": "Trees & Basic Graphs (DFS/BFS)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Trees & Basic Graphs (DFS/BFS) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 31,
+      "stage": "Week 5 — Trees & Basic Graphs (DFS/BFS)",
+      "topic": "Trees & Basic Graphs (DFS/BFS)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Trees & Basic Graphs (DFS/BFS) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 32,
+      "stage": "Week 5 — Trees & Basic Graphs (DFS/BFS)",
+      "topic": "Trees & Basic Graphs (DFS/BFS)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Trees & Basic Graphs (DFS/BFS) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 33,
+      "stage": "Week 5 — Trees & Basic Graphs (DFS/BFS)",
+      "topic": "Trees & Basic Graphs (DFS/BFS)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 1",
+          "difficulty_rating": 1700,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Trees & Basic Graphs (DFS/BFS) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "trees"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Trees & Basic Graphs (DFS/BFS) Codeforces Problem 2",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "trees"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 34,
+      "topic": "Virtual Contest",
+      "stage": "Week 5 — Trees & Basic Graphs (DFS/BFS)",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 35,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 36,
+      "stage": "Week 6 — Shortest Paths (Dijkstra/Bellman-Ford)",
+      "topic": "Shortest Paths (Dijkstra/Bellman-Ford)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 37,
+      "stage": "Week 6 — Shortest Paths (Dijkstra/Bellman-Ford)",
+      "topic": "Shortest Paths (Dijkstra/Bellman-Ford)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 38,
+      "stage": "Week 6 — Shortest Paths (Dijkstra/Bellman-Ford)",
+      "topic": "Shortest Paths (Dijkstra/Bellman-Ford)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 39,
+      "stage": "Week 6 — Shortest Paths (Dijkstra/Bellman-Ford)",
+      "topic": "Shortest Paths (Dijkstra/Bellman-Ford)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 40,
+      "stage": "Week 6 — Shortest Paths (Dijkstra/Bellman-Ford)",
+      "topic": "Shortest Paths (Dijkstra/Bellman-Ford)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "shortest"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Shortest Paths (Dijkstra/Bellman-Ford) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "shortest"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 41,
+      "topic": "Virtual Contest",
+      "stage": "Week 6 — Shortest Paths (Dijkstra/Bellman-Ford)",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 42,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 43,
+      "stage": "Week 7 — Dynamic Programming (1D & 2D)",
+      "topic": "Dynamic Programming (1D & 2D)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (1D & 2D) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 44,
+      "stage": "Week 7 — Dynamic Programming (1D & 2D)",
+      "topic": "Dynamic Programming (1D & 2D)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (1D & 2D) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 45,
+      "stage": "Week 7 — Dynamic Programming (1D & 2D)",
+      "topic": "Dynamic Programming (1D & 2D)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (1D & 2D) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 46,
+      "stage": "Week 7 — Dynamic Programming (1D & 2D)",
+      "topic": "Dynamic Programming (1D & 2D)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (1D & 2D) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 47,
+      "stage": "Week 7 — Dynamic Programming (1D & 2D)",
+      "topic": "Dynamic Programming (1D & 2D)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (1D & 2D) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (1D & 2D) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 48,
+      "topic": "Virtual Contest",
+      "stage": "Week 7 — Dynamic Programming (1D & 2D)",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 49,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 50,
+      "stage": "Week 8 — Dynamic Programming (Knapsack & Trees)",
+      "topic": "Dynamic Programming (Knapsack & Trees)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (Knapsack & Trees) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 51,
+      "stage": "Week 8 — Dynamic Programming (Knapsack & Trees)",
+      "topic": "Dynamic Programming (Knapsack & Trees)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (Knapsack & Trees) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 52,
+      "stage": "Week 8 — Dynamic Programming (Knapsack & Trees)",
+      "topic": "Dynamic Programming (Knapsack & Trees)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (Knapsack & Trees) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 53,
+      "stage": "Week 8 — Dynamic Programming (Knapsack & Trees)",
+      "topic": "Dynamic Programming (Knapsack & Trees)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (Knapsack & Trees) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 54,
+      "stage": "Week 8 — Dynamic Programming (Knapsack & Trees)",
+      "topic": "Dynamic Programming (Knapsack & Trees)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Dynamic Programming (Knapsack & Trees) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "dynamic"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Dynamic Programming (Knapsack & Trees) Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "dynamic"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 55,
+      "topic": "Virtual Contest",
+      "stage": "Week 8 — Dynamic Programming (Knapsack & Trees)",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 56,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 57,
+      "stage": "Week 9 — Disjoint Set Union (DSU) & MST",
+      "topic": "Disjoint Set Union (DSU) & MST",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Disjoint Set Union (DSU) & MST LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 58,
+      "stage": "Week 9 — Disjoint Set Union (DSU) & MST",
+      "topic": "Disjoint Set Union (DSU) & MST",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Disjoint Set Union (DSU) & MST LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 59,
+      "stage": "Week 9 — Disjoint Set Union (DSU) & MST",
+      "topic": "Disjoint Set Union (DSU) & MST",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Disjoint Set Union (DSU) & MST LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 60,
+      "stage": "Week 9 — Disjoint Set Union (DSU) & MST",
+      "topic": "Disjoint Set Union (DSU) & MST",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Disjoint Set Union (DSU) & MST LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 61,
+      "stage": "Week 9 — Disjoint Set Union (DSU) & MST",
+      "topic": "Disjoint Set Union (DSU) & MST",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 1",
+          "difficulty_rating": 1800,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Disjoint Set Union (DSU) & MST LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "disjoint"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Disjoint Set Union (DSU) & MST Codeforces Problem 2",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "disjoint"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 62,
+      "topic": "Virtual Contest",
+      "stage": "Week 9 — Disjoint Set Union (DSU) & MST",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 63,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 64,
+      "stage": "Week 10 — Advanced Graphs & SCCs",
+      "topic": "Advanced Graphs & SCCs",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced Graphs & SCCs LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 65,
+      "stage": "Week 10 — Advanced Graphs & SCCs",
+      "topic": "Advanced Graphs & SCCs",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced Graphs & SCCs LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 66,
+      "stage": "Week 10 — Advanced Graphs & SCCs",
+      "topic": "Advanced Graphs & SCCs",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced Graphs & SCCs LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 67,
+      "stage": "Week 10 — Advanced Graphs & SCCs",
+      "topic": "Advanced Graphs & SCCs",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced Graphs & SCCs LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 68,
+      "stage": "Week 10 — Advanced Graphs & SCCs",
+      "topic": "Advanced Graphs & SCCs",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced Graphs & SCCs LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced Graphs & SCCs Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 69,
+      "topic": "Virtual Contest",
+      "stage": "Week 10 — Advanced Graphs & SCCs",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 70,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 71,
+      "stage": "Week 11 — Segment Trees & Range Queries",
+      "topic": "Segment Trees & Range Queries",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Segment Trees & Range Queries LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 72,
+      "stage": "Week 11 — Segment Trees & Range Queries",
+      "topic": "Segment Trees & Range Queries",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Segment Trees & Range Queries LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 73,
+      "stage": "Week 11 — Segment Trees & Range Queries",
+      "topic": "Segment Trees & Range Queries",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Segment Trees & Range Queries LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 74,
+      "stage": "Week 11 — Segment Trees & Range Queries",
+      "topic": "Segment Trees & Range Queries",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Segment Trees & Range Queries LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 75,
+      "stage": "Week 11 — Segment Trees & Range Queries",
+      "topic": "Segment Trees & Range Queries",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Segment Trees & Range Queries LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "segment"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Segment Trees & Range Queries Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "segment"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 76,
+      "topic": "Virtual Contest",
+      "stage": "Week 11 — Segment Trees & Range Queries",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 77,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 78,
+      "stage": "Week 12 — Advanced DP (Bitmask & Digit)",
+      "topic": "Advanced DP (Bitmask & Digit)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced DP (Bitmask & Digit) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 79,
+      "stage": "Week 12 — Advanced DP (Bitmask & Digit)",
+      "topic": "Advanced DP (Bitmask & Digit)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced DP (Bitmask & Digit) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 80,
+      "stage": "Week 12 — Advanced DP (Bitmask & Digit)",
+      "topic": "Advanced DP (Bitmask & Digit)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced DP (Bitmask & Digit) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 81,
+      "stage": "Week 12 — Advanced DP (Bitmask & Digit)",
+      "topic": "Advanced DP (Bitmask & Digit)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced DP (Bitmask & Digit) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 82,
+      "stage": "Week 12 — Advanced DP (Bitmask & Digit)",
+      "topic": "Advanced DP (Bitmask & Digit)",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Advanced DP (Bitmask & Digit) LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "advanced"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Advanced DP (Bitmask & Digit) Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "advanced"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 83,
+      "topic": "Virtual Contest",
+      "stage": "Week 12 — Advanced DP (Bitmask & Digit)",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 84,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 85,
+      "stage": "Week 13 — Mixed Review & Final Polish",
+      "topic": "Mixed Review & Final Polish",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Mixed Review & Final Polish Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "mixed"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Mixed Review & Final Polish LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "mixed"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Mixed Review & Final Polish Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "mixed"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 86,
+      "stage": "Week 13 — Mixed Review & Final Polish",
+      "topic": "Mixed Review & Final Polish",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Mixed Review & Final Polish Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "mixed"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Mixed Review & Final Polish LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "mixed"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Mixed Review & Final Polish Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "mixed"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 87,
+      "stage": "Week 13 — Mixed Review & Final Polish",
+      "topic": "Mixed Review & Final Polish",
+      "primary_skill": "Problem Solving",
+      "time_target": "2-3 hours",
+      "problems": [
+        {
+          "slot": "A",
+          "platform": "Codeforces",
+          "title": "Mixed Review & Final Polish Codeforces Problem 1",
+          "difficulty_rating": 1900,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "mixed"
+          ]
+        },
+        {
+          "slot": "B",
+          "platform": "LeetCode",
+          "title": "Mixed Review & Final Polish LeetCode Problem",
+          "url": "https://leetcode.com/problemset/all/",
+          "topic_tags": [
+            "mixed"
+          ]
+        },
+        {
+          "slot": "C",
+          "platform": "Codeforces",
+          "title": "Mixed Review & Final Polish Codeforces Problem 2",
+          "difficulty_rating": 2000,
+          "url": "https://codeforces.com/problemset",
+          "topic_tags": [
+            "mixed"
+          ]
+        }
+      ]
+    },
+    {
+      "day_number": 88,
+      "topic": "Virtual Contest",
+      "stage": "Week 13 — Mixed Review & Final Polish",
+      "drill_type": "contest",
+      "contest": {
+        "platform": "Codeforces"
+      }
+    },
+    {
+      "day_number": 89,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    },
+    {
+      "day_number": 90,
+      "topic": "Rest & Review",
+      "time_target": "0-1 hours"
+    }
+  ]
+}

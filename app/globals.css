@@ -1,26 +1,187 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ─── Color Tokens ─────────────────────────────────────────── */
+
+  /* Base surfaces */
+  --color-bg:            #080D18;
+  --color-surface:       #101827;
+  --color-surface-2:     #151F31;
+  --color-surface-hover: #1A263A;
+
+  /* Text */
+  --color-text:          #F5F7FA;
+  --color-text-2:        #9AA7BA;
+  --color-text-3:        #65738A;
+
+  /* Borders */
+  --color-border:        rgba(255, 255, 255, 0.07);
+  --color-border-2:      rgba(255, 255, 255, 0.04);
+
+  /* Accents */
+  --color-blue:          #3B82F6;
+  --color-blue-dim:      rgba(59, 130, 246, 0.12);
+  --color-blue-hover:    rgba(59, 130, 246, 0.18);
+  --color-blue-bright:   #60A5FA;
+
+  --color-green:         #22C55E;
+  --color-green-dim:     rgba(34, 197, 94, 0.12);
+  --color-amber:         #F59E0B;
+  --color-amber-dim:     rgba(245, 158, 11, 0.12);
+  --color-red:           #EF4444;
+  --color-red-dim:       rgba(239, 68, 68, 0.12);
+  --color-gold:          #FBBF24;
+  --color-gold-dim:      rgba(251, 191, 36, 0.12);
+
+  /* Legacy slate aliases (used by Recharts & existing logic) */
+  --color-slate-900: #080D18;
+  --color-slate-800: #101827;
+  --color-slate-700: #1A263A;
+  --color-slate-600: #2D3F57;
+  --color-slate-500: #65738A;
+  --color-slate-400: #9AA7BA;
+  --color-slate-300: #C1CEDE;
+  --color-slate-200: #E0E7F0;
+  --color-slate-100: #F0F5FA;
+  --color-slate-50:  #F5F7FA;
+
+  /* Semantic aliases */
+  --color-background: #080D18;
+  --color-foreground: #F5F7FA;
+  --color-muted:      #65738A;
+
+  /* ─── Typography ───────────────────────────────────────────── */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ─── Radius ───────────────────────────────────────────────── */
+  --radius-sm:  8px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  16px;
+  --radius-2xl: 18px;
 }
 
-@media (prefers-color-scheme: dark) {
+/* ─── Base Layer ────────────────────────────────────────────── */
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+  }
+
+  html {
+    background: #080D18;
+    color: #F5F7FA;
+  }
+
+  body {
+    background: #080D18;
+    color: #F5F7FA;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    border-color: rgba(255, 255, 255, 0.07);
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+}
+
+/* ─── Utilities ─────────────────────────────────────────────── */
+
+/* Subtle elevated surface */
+.surface {
+  background: #101827;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+}
+
+/* More elevated */
+.surface-2 {
+  background: #151F31;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+}
+
+/* Blue glow accent */
+.glow-blue {
+  box-shadow: 0 0 32px rgba(59, 130, 246, 0.10);
+}
+
+/* Glassmorphism (keep for compatibility) */
+.glass {
+  background: rgba(16, 24, 39, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Timer pulse ring */
+@keyframes pulse-ring {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
+.pulse-ring {
+  animation: pulse-ring 2s ease-in-out infinite;
+}
+
+/* Count-up slide */
+@keyframes count-up {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.count-up {
+  animation: count-up 0.4s ease-out both;
+}
+
+/* Page entrance */
+@keyframes page-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter {
+  animation: page-enter 0.25s ease-out both;
+}
+
+/* Progress bar fill */
+@keyframes progress-fill {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .count-up,
+  .pulse-ring {
+    animation: none;
+  }
+  * {
+    transition-duration: 0ms !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Form input base */
+.input-base {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: #080D18;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #F5F7FA;
+  outline: none;
+  transition: box-shadow 150ms ease, border-color 150ms ease;
+}
+.input-base::placeholder {
+  color: #65738A;
+}
+.input-base:focus {
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
 }

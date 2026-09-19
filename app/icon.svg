@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background -->
+  <rect width="32" height="32" rx="8" fill="#101827"/>
+
+  <!-- Mountain left slope -->
+  <path d="M4 26 L16 8 L20 14" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Mountain right slope -->
+  <path d="M20 14 L24 20 L28 26" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.6"/>
+
+  <!-- Arrow up on peak -->
+  <path d="M13 17 L16 8" stroke="#60A5FA" stroke-width="2" stroke-linecap="round"/>
+  <path d="M13.5 11 L16 8 L18.5 11" stroke="#60A5FA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Summit glow dot -->
+  <circle cx="16" cy="8" r="2.5" fill="#60A5FA"/>
+  <circle cx="16" cy="8" r="4" fill="rgba(96,165,250,0.2)"/>
+</svg>
