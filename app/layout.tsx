@@ -3,6 +3,7 @@ import './globals.css'
 import { ReactQueryProvider } from '@/components/providers/ReactQueryProvider'
 import { Toaster } from '@/components/ui/toaster'
 import NextTopLoader from 'nextjs-toploader'
+import { CapacitorSplashScreen } from '@/components/CapacitorSplashScreen'
 
 export const metadata: Metadata = {
   title: 'GoalAscent — Contest & Skill Mastery Engine',
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="flex h-full flex-col">
           <ReactQueryProvider>
+            <CapacitorSplashScreen />
             <NextTopLoader color="#FFF" height={3} showSpinner={false} />
             {children}
             <Toaster />
