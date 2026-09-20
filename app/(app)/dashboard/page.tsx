@@ -1,6 +1,6 @@
 'use client'
 
-import { useMissions, useMission, useDayTasks, useContestLogs, useProfileStats, useReviewQueue } from '@/lib/queries'
+import { useMissions, useMission, useDayTasks, useContestLogs, useReviewQueue, useUserPlatformRatings } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
 import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { KPICard } from '@/components/KPICard'
@@ -11,7 +11,8 @@ import {
   PieChart, Pie, Cell, Legend,
 } from 'recharts'
 import { format, differenceInCalendarDays, parseISO } from 'date-fns'
-import { ERROR_CATEGORIES } from '@/lib/types'
+import { ERROR_CATEGORIES, PLATFORM_COLORS } from '@/lib/types'
+import { useEffect } from 'react'
 
 const RATING_BUCKETS = [
   { label: '<1400',    min: 0,    max: 1399,    color: '#65738A' },
@@ -64,14 +65,18 @@ export default function DashboardPage() {
   const { data: mission } = useMission(activeMissionId)
   const { data: dayTasks = [] } = useDayTasks(activeMissionId)
   const { data: contestLogs = [] } = useContestLogs(activeMissionId)
-  const { data: stats } = useProfileStats()
   const { data: reviewQueue = [] } = useReviewQueue()
+  const { data: ratings = [] } = useUserPlatformRatings()
+
+  const pinnedRatings = ratings.filter(r => r.is_pinned).slice(0, 2)
 
   // Auto-select first active mission if none set
-  if (!activeMissionId && missions.length > 0) {
-    const firstActive = missions.find((m) => m.status === 'Active') ?? missions[0]
-    setActiveMissionId(firstActive.mission_id)
-  }
+  useEffect(() => {
+    if (!activeMissionId && missions.length > 0) {
+      const firstActive = missions.find((m) => m.status === 'Active') ?? missions[0]
+      setActiveMissionId(firstActive.mission_id)
+    }
+  }, [activeMissionId, missions, setActiveMissionId])
 
   // KPI computations
   const allProblems = dayTasks.flatMap((d) => d.problem_items ?? [])
@@ -140,6 +145,7 @@ export default function DashboardPage() {
             missions={missions}
             activeMissionId={activeMissionId}
             onSelect={setActiveMissionId}
+            dropdownAlignClass="left-0 sm:left-auto sm:right-0"
           />
         </div>
       </div>
@@ -147,6 +153,21 @@ export default function DashboardPage() {
       {/* ── Scrollable Body ────────────────── */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
       <div className="p-6 space-y-5">
+
+      {/* ── Pinned Platforms ───────────────── */}
+      {pinnedRatings.length > 0 && (
+        <div className="flex flex-col sm:flex-row gap-3">
+          {pinnedRatings.map(r => (
+            <div key={r.platform} className="flex-1 rounded-[16px] p-4 flex items-center justify-between" style={{ background: '#101827', border: '1px solid rgba(255,255,255,0.07)' }}>
+               <div className="flex items-center gap-3">
+                 <div className="w-2.5 h-2.5 rounded-full" style={{ background: PLATFORM_COLORS[r.platform] || '#60A5FA' }} />
+                 <span className="text-[14px] font-semibold text-[#F5F7FA]">{r.platform}</span>
+               </div>
+               <span className="text-[18px] font-bold font-mono text-[#F5F7FA]">{r.rating}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* ── Rating progress banner ────────── */}
       {mission && (
@@ -247,7 +268,7 @@ export default function DashboardPage() {
         {/* Rating Trajectory */}
         <div className="rounded-[14px] border p-5"
           style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}>
-          <p className="text-[14px] font-semibold text-[#F5F7FA] mb-4">Rating Trajectory</p>
+          <p className="text-[14px] font-semibold text-[#F5F7FA] mb-4 text-center">Rating Trajectory</p>
           {mission ? (
             <RatingChart
               contestLogs={contestLogs}
@@ -267,7 +288,7 @@ export default function DashboardPage() {
         {/* Difficulty Distribution */}
         <div className="rounded-[14px] border p-5"
           style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}>
-          <p className="text-[14px] font-semibold text-[#F5F7FA] mb-4">Difficulty Distribution</p>
+          <p className="text-[14px] font-semibold text-[#F5F7FA] mb-4 text-center">Difficulty Distribution</p>
           {hasAnyDiffData ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={diffBuckets} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -312,7 +333,7 @@ export default function DashboardPage() {
       {errorPieData.length > 0 && (
         <div className="rounded-[14px] border p-5"
           style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}>
-          <p className="text-[14px] font-semibold text-[#F5F7FA] mb-4">Contest Error Taxonomy</p>
+          <p className="text-[14px] font-semibold text-[#F5F7FA] mb-4 text-center">Contest Error Taxonomy</p>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie

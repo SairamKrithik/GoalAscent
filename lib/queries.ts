@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type {
   Mission, DayTask, ProblemItem, ContestLog, ReviewQueueItem, Profile, ProfileStats,
-  ImportedMission,
+  ImportedMission, UserPlatformRating,
 } from '@/lib/types'
 
 const supabase = createClient()
@@ -91,7 +91,78 @@ export function useUpdateProblem() {
   })
 }
 
+
+export function useUserPlatformRatings() {
+  return useQuery({
+    queryKey: ['user_platform_ratings'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+      const { data, error } = await supabase
+        .from('user_platform_ratings')
+        .select('*')
+        .eq('user_id', user.id)
+      if (error) throw error
+      return data as UserPlatformRating[]
+    },
+  })
+}
+
 // ─── Contest Logs ─────────────────────────────────────────────────────────────
+
+export function useTogglePinRating() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ platform, is_pinned }: { platform: string; is_pinned: boolean }) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      const { error } = await supabase
+        .from('user_platform_ratings')
+        .update({ is_pinned })
+        .eq('user_id', user.id)
+        .eq('platform', platform)
+
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['user_platform_ratings'] }),
+  })
+}
+
+export function useDeletePlatformHistory() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (platform: string) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      // Delete user_platform_ratings entry
+      const { error: ratingError, count } = await supabase
+        .from('user_platform_ratings')
+        .delete({ count: 'exact' })
+        .eq('user_id', user.id)
+        .eq('platform', platform)
+
+      if (ratingError) throw ratingError
+
+      console.log(`Deleted ${count} rating records for platform ${platform}`)
+
+      // Delete contest logs for this platform
+      // RLS safely ensures only the current user's contest logs are deleted
+      const { error: logsError } = await supabase
+        .from('contest_logs')
+        .delete()
+        .eq('platform', platform)
+      if (logsError) throw logsError
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['user_platform_ratings'] })
+      qc.invalidateQueries({ queryKey: ['contest_logs'] })
+      qc.invalidateQueries({ queryKey: ['profile_stats'] })
+    },
+  })
+}
+
 
 export function useContestLogs(missionId: string | null) {
   return useQuery({
@@ -113,11 +184,29 @@ export function useCreateContestLog() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: async (log: Omit<ContestLog, 'log_id'>) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
       const { data, error } = await supabase.from('contest_logs').insert(log).select().single()
       if (error) throw error
+      
+      // Update rating for the platform if new_rating is provided
+      if (log.new_rating != null && log.platform) {
+         const { error: ratingError } = await supabase.from('user_platform_ratings').upsert({
+           user_id: user.id,
+           platform: log.platform,
+           rating: log.new_rating,
+         }, { onConflict: 'user_id,platform' })
+         
+         if (ratingError) throw ratingError
+      }
+      
       return data as ContestLog
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['contest_logs'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['contest_logs'] })
+      qc.invalidateQueries({ queryKey: ['user_platform_ratings'] })
+    },
   })
 }
 
@@ -235,6 +324,29 @@ export function useCreateMission() {
   })
 }
 
+export function useDeleteMission() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (missionId: string) => {
+      // Due to CASCADE constraints, this automatically deletes the related day_tasks,
+      // problem_items, contest_logs, and review_queue items.
+      const { error } = await supabase
+        .from('missions')
+        .delete()
+        .eq('mission_id', missionId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['missions'] })
+      qc.invalidateQueries({ queryKey: ['profile_stats'] })
+      // Some other queries that may be affected by the mission going away
+      qc.invalidateQueries({ queryKey: ['day_tasks'] })
+      qc.invalidateQueries({ queryKey: ['contest_logs'] })
+      qc.invalidateQueries({ queryKey: ['review_queue'] })
+    }
+  })
+}
+
 // ─── Schedule import ──────────────────────────────────────────────────────────
 
 export function useImportSchedule() {
@@ -305,25 +417,8 @@ export function useImportSchedule() {
           if (piErr) throw new Error(`Day ${day.day_number} problems: ${piErr.message}`)
         }
 
-        // Insert contest log if present
-        if (day.contest) {
-          const c = day.contest
-          const contestRow = {
-            mission_id: missionId,
-            platform: c.platform ?? 'Codeforces',
-            contest_date: dayDate.toISOString().slice(0, 10),
-            contest_name: c.name ?? null,
-            problems_solved: c.problems_solved ?? null,
-            total_time_mins: c.total_time_mins ?? null,
-            penalties: c.penalties ?? 0,
-            rank_percentile: c.rank_percentile ?? null,
-            rating_delta: c.rating_delta ?? null,
-            new_rating: c.new_rating ?? null,
-            error_entries: [],
-          }
-          const { error: clErr } = await supabase.from('contest_logs').insert(contestRow)
-          if (clErr) throw new Error(`Day ${day.day_number} contest: ${clErr.message}`)
-        }
+        // Removed auto-inserting of contest logs to prevent blank logs.
+        // Contests are now only logged when the user manually submits a log for a contest drill.
       }
     },
     onSuccess: (_data, { missionId }) => {

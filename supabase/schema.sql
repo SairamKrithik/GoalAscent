@@ -237,3 +237,25 @@ create index if not exists idx_problem_items_mission  on public.problem_items(mi
 create index if not exists idx_problem_items_day_task on public.problem_items(day_task_id);
 create index if not exists idx_contest_logs_mission   on public.contest_logs(mission_id);
 create index if not exists idx_review_queue_user_due  on public.review_queue(user_id, due_date) where resolved = false;
+-- 1. Create user_platform_ratings table
+create table if not exists public.user_platform_ratings (
+  user_id        uuid references auth.users(id) on delete cascade,
+  platform       text not null,
+  rating         integer not null default 0,
+  updated_at     timestamptz not null default now(),
+  primary key (user_id, platform)
+);
+
+alter table public.user_platform_ratings enable row level security;
+
+create policy "user_platform_ratings: owner read"   on public.user_platform_ratings for select using (auth.uid() = user_id);
+create policy "user_platform_ratings: owner insert" on public.user_platform_ratings for insert with check (auth.uid() = user_id);
+create policy "user_platform_ratings: owner update" on public.user_platform_ratings for update using (auth.uid() = user_id);
+create policy "user_platform_ratings: owner delete" on public.user_platform_ratings for delete using (auth.uid() = user_id);
+
+-- 2. Add platform to missions table
+alter table public.missions
+add column if not exists platform text not null default 'Codeforces';
+
+-- 3. Modify contest_logs auto-update rating (We will handle this in application logic, but if there's a trigger, we modify it. I'll check schema first.)
+alter table public.user_platform_ratings add column if not exists is_pinned boolean not null default false;

@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { useProfile, useProfileStats, useCreateMission, useUpdateProfile, type CreateMissionInput } from '@/lib/queries'
+import { useProfile, useProfileStats, useMissions, useCreateMission, useUpdateProfile, useDeleteMission, useImportSchedule, useUserPlatformRatings, useTogglePinRating, useDeletePlatformHistory, type CreateMissionInput } from '@/lib/queries'
 import { useQueryClient } from '@tanstack/react-query'
+import { useAppStore } from '@/lib/store'
 import { KPICard } from '@/components/KPICard'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -10,8 +11,11 @@ import { Dialog } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import { validateImport, IMPORT_EXAMPLE } from '@/lib/importUtils'
+import type { ImportedMission } from '@/lib/types'
 
 interface NewMissionForm {
+  platform: string
   title: string
   description: string
   duration_days: string
@@ -22,6 +26,7 @@ interface NewMissionForm {
 }
 
 const DEFAULT_MISSION_FORM: NewMissionForm = {
+  platform: 'Codeforces',
   title: '',
   description: '',
   duration_days: '90',
@@ -39,14 +44,25 @@ const labelCls = 'block text-[11px] font-medium text-[#65738A] mb-1.5'
 export default function ProfilePage() {
   const { data: profile, isLoading: profileLoading } = useProfile()
   const { data: stats } = useProfileStats()
+  const { data: ratings } = useUserPlatformRatings()
+  const { data: missions } = useMissions()
   const createMission = useCreateMission()
   const updateProfile = useUpdateProfile()
+  const togglePinRating = useTogglePinRating()
+  const deletePlatformHistory = useDeletePlatformHistory()
+  const deleteMission = useDeleteMission()
+  const importSchedule = useImportSchedule()
   const router = useRouter()
+
+  const { activeMissionId, setActiveMissionId } = useAppStore()
 
   const qc = useQueryClient()
   const [showNewMission, setShowNewMission] = useState(false)
   const [missionForm, setMissionForm] = useState<NewMissionForm>(DEFAULT_MISSION_FORM)
+  const [scheduleJson, setScheduleJson] = useState('')
+  const [showExample, setShowExample] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
+  const [showRatingsModal, setShowRatingsModal] = useState(false)
 
   // Profile editing state
   const [editingName, setEditingName] = useState(false)
@@ -54,6 +70,34 @@ export default function ProfilePage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  
+  async function handleTogglePin(platform: string, currentState: boolean) {
+    if (!currentState) {
+      const pinnedCount = (ratings || []).filter(r => r.is_pinned).length
+      if (pinnedCount >= 2) {
+        toast.error('You can only pin up to 2 platforms.')
+        return
+      }
+    }
+    try {
+      await togglePinRating.mutateAsync({ platform, is_pinned: !currentState })
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to update pin status')
+    }
+  }
+
+  async function handleDeletePlatform(platform: string) {
+    if (!confirm(`Are you sure you want to completely delete all rating history and contest logs for ${platform}? This cannot be undone.`)) {
+      return
+    }
+    try {
+      await deletePlatformHistory.mutateAsync(platform)
+      toast.success(`${platform} history deleted`)
+    } catch (err: any) {
+      toast.error(err?.message ?? `Failed to delete ${platform} history`)
+    }
+  }
 
   function patchMission(patch: Partial<NewMissionForm>) {
     setMissionForm((prev) => ({ ...prev, ...patch }))
@@ -65,8 +109,22 @@ export default function ProfilePage() {
       toast.error('Duration must be at least 1 day'); return
     }
 
+    let validatedSchedule: ImportedMission | null = null
+    if (!scheduleJson.trim()) {
+      toast.error('Schedule JSON is required to create a mission')
+      return
+    }
+
     try {
-      await createMission.mutateAsync({
+      const parsed = JSON.parse(scheduleJson)
+      validatedSchedule = validateImport(parsed)
+    } catch (err: unknown) {
+      toast.error(`Schedule JSON error: ${(err as Error).message}`)
+      return
+    }
+
+    try {
+      const newMission = await createMission.mutateAsync({
         title: missionForm.title,
         description: missionForm.description || null,
         duration_days: Number(missionForm.duration_days),
@@ -78,10 +136,22 @@ export default function ProfilePage() {
         status: 'Active',
         forked_from_mission_id: null,
         forked_from_template_id: null,
+        platform: missionForm.platform,
       } satisfies CreateMissionInput)
-      toast.success('Mission created!')
+
+      if (validatedSchedule) {
+        await importSchedule.mutateAsync({
+          missionId: newMission.mission_id,
+          startDate: newMission.start_date,
+          imported: validatedSchedule,
+        })
+      }
+
+      toast.success('Mission created' + (validatedSchedule ? ' with schedule!' : '!'))
       setShowNewMission(false)
       setMissionForm(DEFAULT_MISSION_FORM)
+      setScheduleJson('')
+      setActiveMissionId(newMission.mission_id)
       router.push('/dashboard')
     } catch (err: any) {
       toast.error(err?.message ?? 'Failed to create mission')
@@ -150,6 +220,21 @@ export default function ProfilePage() {
     router.push('/login')
   }
 
+  async function handleDeleteMission(missionId: string, title: string) {
+    if (!confirm(`Are you sure you want to delete the mission "${title}"? This will permanently delete all associated schedule data, problem logs, and contest logs.`)) {
+      return
+    }
+    try {
+      await deleteMission.mutateAsync(missionId)
+      if (activeMissionId === missionId) {
+        setActiveMissionId(null)
+      }
+      toast.success('Mission deleted completely')
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to delete mission')
+    }
+  }
+
   if (profileLoading) {
     return (
       <div className="flex items-center justify-center p-12">
@@ -164,6 +249,9 @@ export default function ProfilePage() {
       <div className="shrink-0 flex flex-col sm:flex-row sm:items-center gap-3 px-6 pt-6 pb-4"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
         <h1 className="text-[24px] sm:text-[28px] font-bold text-[#F5F7FA] tracking-tight leading-none flex-1">Profile</h1>
+        <Button variant="secondary" size="sm" onClick={() => setShowRatingsModal(true)} className="self-start sm:self-auto">
+          Manage Ratings
+        </Button>
         <Button variant="secondary" size="sm" onClick={handleSignOut} disabled={signingOut} className="self-start sm:self-auto">
           {signingOut ? 'Signing out…' : 'Sign Out'}
         </Button>
@@ -316,6 +404,9 @@ export default function ProfilePage() {
         </div>
       )}
 
+      
+
+
       {/* New mission CTA */}
       <div className="rounded-[16px] border p-5 flex items-center justify-between gap-4"
         style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}>
@@ -328,12 +419,103 @@ export default function ProfilePage() {
         <Button
           variant="primary"
           size="sm"
-          onClick={() => { setMissionForm(DEFAULT_MISSION_FORM); setShowNewMission(true) }}
+          onClick={() => {
+            setMissionForm(DEFAULT_MISSION_FORM)
+            setScheduleJson('')
+            setShowExample(false)
+            setShowNewMission(true)
+          }}
           className="flex-none"
         >
           + New Mission
         </Button>
       </div>
+
+      {/* Your Missions */}
+      <div className="mt-8">
+        <h2 className="text-[16px] font-semibold text-[#F5F7FA] mb-4">Your Missions</h2>
+        <div className="space-y-3">
+          {missions?.length === 0 ? (
+            <p className="text-[13px] text-[#65738A]">No missions created yet.</p>
+          ) : (
+            missions?.map((m) => (
+              <div key={m.mission_id} className="rounded-[12px] border p-4 flex items-center justify-between gap-4"
+                style={{ background: '#0F1523', borderColor: 'rgba(255,255,255,0.05)' }}>
+                <div>
+                  <p className="text-[14px] font-medium text-[#F5F7FA]">{m.title}</p>
+                  <p className="text-[12px] text-[#65738A] mt-1">
+                    {m.status} • {m.duration_days} Days • {m.start_date.slice(0, 10)} • {m.platform || 'Codeforces'}
+                  </p>
+                </div>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => handleDeleteMission(m.mission_id, m.title)}
+                  disabled={deleteMission.isPending}
+                  className="text-red-400 hover:text-red-300 hover:bg-red-950/30 border-red-900/30"
+                >
+                  Delete Mission
+                </Button>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      
+      {/* Manage Ratings Modal */}
+      <Dialog
+        open={showRatingsModal}
+        onClose={() => setShowRatingsModal(false)}
+        title="Manage Platform Ratings"
+        size="md"
+      >
+        <div className="p-6">
+          <p className="text-[13px] text-[#65738A] mb-4">Pin up to 2 platforms to display on your dashboard.</p>
+          {(!ratings || ratings.length === 0) ? (
+            <div className="text-center py-8">
+              <p className="text-[14px] text-[#9AA7BA]">No ratings yet.</p>
+              <p className="text-[12px] text-[#65738A] mt-1">Log contests to track your ratings.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {ratings.map(r => (
+                <div key={r.platform} className="rounded-[12px] border p-4 flex items-center justify-between gap-4"
+                  style={{ background: '#0F1523', borderColor: 'rgba(255,255,255,0.05)' }}>
+                  <div className="flex-1 min-w-0">
+                     <p className="text-[15px] font-semibold text-[#F5F7FA] truncate">{r.platform}</p>
+                     <p className="text-[13px] text-[#65738A] mt-0.5">Rating: <span className="font-bold text-[#E2E8F0]">{r.rating}</span></p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      onClick={() => handleTogglePin(r.platform, !!r.is_pinned)}
+                      className="p-2 transition-colors hover:bg-white/5 rounded-full outline-none"
+                      title={r.is_pinned ? "Unpin platform" : "Pin platform"}
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill={r.is_pinned ? '#EAB308' : 'none'} stroke={r.is_pinned ? '#EAB308' : '#65738A'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => handleDeletePlatform(r.platform)}
+                      disabled={deletePlatformHistory.isPending}
+                      className="p-2 transition-colors hover:bg-red-500/10 rounded-full outline-none text-[#65738A] hover:text-red-400"
+                      title="Delete platform history"
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </Dialog>
+
 
       {/* New Mission Dialog */}
       <Dialog
@@ -343,6 +525,22 @@ export default function ProfilePage() {
         size="md"
       >
         <div className="space-y-4 px-6 py-5">
+          <div>
+            <label className={labelCls}>Platform *</label>
+            <select
+              className={inputCls}
+              style={inputStyle}
+              value={missionForm.platform}
+              onChange={(e) => patchMission({ platform: e.target.value })}
+            >
+              <option value="Codeforces">Codeforces</option>
+              <option value="LeetCode">LeetCode</option>
+              <option value="AtCoder">AtCoder</option>
+              <option value="HackerRank">HackerRank</option>
+              <option value="CodeChef">CodeChef</option>
+            </select>
+          </div>
+
           <div>
             <label className={labelCls}>Mission Title *</label>
             <input
@@ -423,14 +621,41 @@ export default function ProfilePage() {
             />
           </div>
 
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-[11px] font-medium text-[#65738A]">Initial Schedule JSON *</label>
+              <button
+                className="text-blue-400 hover:text-blue-300 underline text-[11px]"
+                onClick={() => setShowExample((v) => !v)}
+              >
+                {showExample ? 'Hide example' : 'View format'}
+              </button>
+            </div>
+            {showExample && (
+              <pre className="mb-2 overflow-x-auto rounded-[8px] p-3 text-[10px] leading-relaxed font-mono"
+                style={{ background: '#080D18', border: '1px solid rgba(255,255,255,0.07)', color: '#9AA7BA' }}>
+                {IMPORT_EXAMPLE}
+              </pre>
+            )}
+            <textarea
+              rows={4}
+              className={inputCls + ' resize-y font-mono text-[11px]'}
+              style={inputStyle}
+              placeholder={'{\n  "days": [\n    { "day_number": 1, "topic": "...", "problems": [...] }\n  ]\n}'}
+              value={scheduleJson}
+              onChange={(e) => setScheduleJson(e.target.value)}
+              spellCheck={false}
+            />
+          </div>
+
           <div className="flex justify-end gap-2 pt-1">
-            <Button variant="secondary" onClick={() => setShowNewMission(false)}>Cancel</Button>
+            <Button variant="secondary" onClick={() => { setShowNewMission(false); setScheduleJson(''); setShowExample(false); }}>Cancel</Button>
             <Button
               variant="primary"
               onClick={handleCreateMission}
-              disabled={createMission.isPending}
+              disabled={createMission.isPending || importSchedule.isPending}
             >
-              {createMission.isPending ? 'Creating…' : 'Create Mission'}
+              {createMission.isPending || importSchedule.isPending ? 'Creating…' : 'Create Mission'}
             </Button>
           </div>
         </div>

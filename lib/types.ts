@@ -4,6 +4,16 @@
 export type ReviewTag = 'GREEN' | 'YELLOW' | 'RED'
 export type ProblemStatus = 'Pending' | 'In Progress' | 'Done' | 'Skipped'
 export type MissionStatus = 'Active' | 'Archived' | 'Completed'
+export type Platform = 'LeetCode' | 'Codeforces' | 'AtCoder' | 'HackerRank' | 'CodeChef' | string
+
+
+export interface UserPlatformRating {
+  is_pinned: boolean
+  user_id: string
+  platform: Platform
+  rating: number
+  updated_at: string
+}
 
 export interface Profile {
   user_id: string
@@ -35,6 +45,7 @@ export interface MissionTemplate {
 
 export interface Mission {
   mission_id: string
+  platform: string
   user_id: string
   title: string
   description: string | null

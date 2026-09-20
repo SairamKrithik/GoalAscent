@@ -8,6 +8,7 @@ interface MissionSwitcherProps {
   missions: Mission[]
   activeMissionId: string | null
   onSelect: (missionId: string) => void
+  dropdownAlignClass?: string
 }
 
 const statusStyle: Record<Mission['status'], { color: string; bg: string }> = {
@@ -29,7 +30,7 @@ function ChevronDown({ open }: { open: boolean }) {
   )
 }
 
-export function MissionSwitcher({ missions, activeMissionId, onSelect }: MissionSwitcherProps) {
+export function MissionSwitcher({ missions, activeMissionId, onSelect, dropdownAlignClass = 'right-0' }: MissionSwitcherProps) {
   const [open, setOpen] = useState(false)
   const active = missions.find((m) => m.mission_id === activeMissionId)
 
@@ -64,13 +65,13 @@ export function MissionSwitcher({ missions, activeMissionId, onSelect }: Mission
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
           <div
-            className="absolute right-0 top-full z-20 mt-1.5 rounded-[12px] py-1.5 shadow-2xl overflow-hidden"
+            className={`absolute top-full z-20 mt-1.5 rounded-[12px] py-1.5 shadow-2xl overflow-hidden ${dropdownAlignClass}`}
             style={{
               background: '#101827',
               border: '1px solid rgba(255,255,255,0.09)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
               width: '18rem',
-              maxWidth: 'calc(100vw - 1.5rem)',
+              maxWidth: '90vw',
             }}
           >
             {missions.length === 0 && (

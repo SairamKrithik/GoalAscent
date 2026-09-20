@@ -1,12 +1,11 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { differenceInCalendarDays, startOfDay, parseISO } from 'date-fns'
 import { useMissions, useDayTasks, useContestLogs, useUpdateProblem, useUpsertDayTask, useCreateContestLog, useDeleteSchedule } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
 import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { ProblemCard } from '@/components/ProblemCard'
-import { ImportDialog } from '@/components/ImportDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -534,7 +533,7 @@ function ScheduleHeatmap({
 
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
-function EmptySchedule({ onImport }: { onImport: () => void }) {
+function EmptySchedule() {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-4">
       <div className="w-12 h-12 rounded-2xl flex items-center justify-center"
@@ -549,9 +548,8 @@ function EmptySchedule({ onImport }: { onImport: () => void }) {
       </div>
       <div className="text-center">
         <p className="text-[15px] font-semibold text-[#9AA7BA]">No schedule yet</p>
-        <p className="text-[13px] text-[#65738A] mt-1">Import a schedule JSON to get started</p>
+        <p className="text-[13px] text-[#65738A] mt-1">Select a different mission or create a new one with a schedule JSON to get started</p>
       </div>
-      <Button variant="primary" size="sm" onClick={onImport}>Import Schedule JSON</Button>
     </div>
   )
 }
@@ -569,17 +567,17 @@ export default function SchedulePage() {
   const [search, setSearch] = useState('')
   const [ratingMin, setRatingMin] = useState('')
   const [ratingMax, setRatingMax] = useState('')
-  const [showImport, setShowImport] = useState(false)
   const [actionsOpen, setActionsOpen] = useState(false)
-  const actionsRef = useRef<HTMLDivElement>(null)
   const [showRestDays, setShowRestDays] = useState(false)
   const [selectedDayNum, setSelectedDayNum] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<'single' | 'all'>('single')
 
-  if (!activeMissionId && missions.length > 0) {
-    const first = missions.find((m) => m.status === 'Active') ?? missions[0]
-    setActiveMissionId(first.mission_id)
-  }
+  useEffect(() => {
+    if (!activeMissionId && missions.length > 0) {
+      const first = missions.find((m) => m.status === 'Active') ?? missions[0]
+      setActiveMissionId(first.mission_id)
+    }
+  }, [activeMissionId, missions, setActiveMissionId])
 
   async function handleDeleteSchedule() {
     if (!activeMissionId) return
@@ -666,7 +664,7 @@ export default function SchedulePage() {
 
         {/* Actions kebab — only when a mission is active */}
         {activeMissionId && (
-          <div className="relative shrink-0" ref={actionsRef}>
+          <div className="relative shrink-0">
             <button
               onClick={() => setActionsOpen((o) => !o)}
               className="flex items-center justify-center w-8 h-8 rounded-[8px] transition-colors duration-150"
@@ -694,15 +692,6 @@ export default function SchedulePage() {
                     minWidth: '10rem',
                   }}
                 >
-                  <button
-                    onClick={() => { setActionsOpen(false); setShowImport(true) }}
-                    className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[13px] text-[#9AA7BA] hover:bg-white/[0.04] transition-colors duration-100"
-                  >
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
-                    </svg>
-                    Import Schedule
-                  </button>
                   {hasRealDays && (
                     <button
                       onClick={() => { setActionsOpen(false); handleDeleteSchedule() }}
@@ -827,7 +816,7 @@ export default function SchedulePage() {
           <div className="w-5 h-5 rounded-full border-2 border-[#3B82F6]/30 border-t-[#3B82F6] animate-spin" />
         </div>
       ) : allDays.length === 0 || !hasRealDays ? (
-        <EmptySchedule onImport={() => setShowImport(true)} />
+        <EmptySchedule />
       ) : (
         <div className="space-y-2">
           {allDays
@@ -899,16 +888,6 @@ export default function SchedulePage() {
               )
             })}
         </div>
-      )}
-
-      {/* Import dialog */}
-      {activeMission && (
-        <ImportDialog
-          open={showImport}
-          onClose={() => setShowImport(false)}
-          missionId={activeMission.mission_id}
-          startDate={activeMission.start_date}
-        />
       )}
       </div>
       </div>

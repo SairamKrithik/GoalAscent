@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Logo, LogoMark } from '@/components/Logo'
 
+import { useReviewQueue } from '@/lib/queries'
+
 function IconDashboard() {
   return (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
@@ -70,6 +72,8 @@ const navItems = [
 
 export function AppNav() {
   const pathname = usePathname()
+  const { data: reviewQueue = [] } = useReviewQueue()
+  const reviewCount = reviewQueue.length
 
   return (
     <>
@@ -105,6 +109,11 @@ export function AppNav() {
                   <Icon />
                 </span>
                 {label}
+                {href === '/review' && reviewCount > 0 && (
+                  <span className="ml-auto flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white shadow-sm ring-2 ring-[#080D18]">
+                    {reviewCount}
+                  </span>
+                )}
               </Link>
             )
           })}
@@ -135,11 +144,18 @@ export function AppNav() {
               key={href}
               href={href}
               className={cn(
-                'flex flex-1 flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-colors duration-150',
+                'relative flex flex-1 flex-col items-center gap-1 py-2.5 text-[10px] font-medium transition-colors duration-150',
                 active ? 'text-[#60A5FA]' : 'text-[#65738A]',
               )}
             >
-              <Icon />
+              <div className="relative">
+                <Icon />
+                {href === '/review' && reviewCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white shadow-sm ring-2 ring-[#080D18]">
+                    {reviewCount > 99 ? '99+' : reviewCount}
+                  </span>
+                )}
+              </div>
               {label}
             </Link>
           )

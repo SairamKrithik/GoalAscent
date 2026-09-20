@@ -148,7 +148,11 @@ export default function ContestsPage() {
         </div>
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
           <MissionSwitcher missions={missions} activeMissionId={activeMissionId} onSelect={setActiveMissionId} />
-          <Button variant="primary" size="sm" onClick={() => { setForm(DEFAULT_FORM); setShowForm(true) }}>
+          <Button variant="primary" size="sm" onClick={() => {
+            const m = missions.find(m => m.mission_id === activeMissionId);
+            setForm({ ...DEFAULT_FORM, platform: m?.platform || 'Codeforces' }); 
+            setShowForm(true) 
+          }}>
             + Log Contest
           </Button>
         </div>
