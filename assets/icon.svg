@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <!-- Icon mark: ascending mountain path with arrow -->
+  <g>
+    <!-- Mountain base gradient bar -->
+    <rect x="0" y="38" width="44" height="2.5" rx="1.25" fill="rgba(59,130,246,0.18)"/>
+
+    <!-- Mountain left slope -->
+    <path d="M4 38 L22 14 L28 22" stroke="#3B82F6" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <!-- Mountain right slope (higher peak implied) -->
+    <path d="M28 22 L34 30 L40 38" stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.6"/>
+
+    <!-- Ascending arrow on the path -->
+    <path d="M16 26 L22 14" stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M19 17 L22 14 L25 17" stroke="#60A5FA" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+    <!-- Summit dot -->
+    <circle cx="22" cy="14" r="2.5" fill="#60A5FA"/>
+    <circle cx="22" cy="14" r="4.5" fill="rgba(96,165,250,0.15)"/>
+  </g>
+
+  <!-- Wordmark -->
+  <text x="52" y="34" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.5" fill="#F5F7FA">Goal</text>
+  <text x="104" y="34" font-family="Inter, -apple-system, BlinkMacSystemFont, sans-serif" font-size="22" font-weight="700" letter-spacing="-0.5" fill="#60A5FA">Ascent</text>
+</svg>
