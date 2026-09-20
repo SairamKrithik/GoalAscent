@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useAppStore } from '@/lib/store'
 import { KPICard } from '@/components/KPICard'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Dialog } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -65,8 +65,8 @@ export default function ProfilePage() {
   const [showRatingsModal, setShowRatingsModal] = useState(false)
 
   // Profile editing state
-  const [editingName, setEditingName] = useState(false)
-  const [nameValue, setNameValue] = useState('')
+  const [deletePlatformInfo, setDeletePlatformInfo] = useState<{ platform: string } | null>(null)
+  const [deleteMissionInfo, setDeleteMissionInfo] = useState<{ missionId: string; title: string } | null>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -88,12 +88,16 @@ export default function ProfilePage() {
   }
 
   async function handleDeletePlatform(platform: string) {
-    if (!confirm(`Are you sure you want to completely delete all rating history and contest logs for ${platform}? This cannot be undone.`)) {
-      return
-    }
+    setDeletePlatformInfo({ platform })
+  }
+
+  async function performDeletePlatform() {
+    if (!deletePlatformInfo) return
+    const platform = deletePlatformInfo.platform
     try {
       await deletePlatformHistory.mutateAsync(platform)
       toast.success(`${platform} history deleted`)
+      setDeletePlatformInfo(null)
     } catch (err: any) {
       toast.error(err?.message ?? `Failed to delete ${platform} history`)
     }
@@ -221,15 +225,19 @@ export default function ProfilePage() {
   }
 
   async function handleDeleteMission(missionId: string, title: string) {
-    if (!confirm(`Are you sure you want to delete the mission "${title}"? This will permanently delete all associated schedule data, problem logs, and contest logs.`)) {
-      return
-    }
+    setDeleteMissionInfo({ missionId, title })
+  }
+
+  async function performDeleteMission() {
+    if (!deleteMissionInfo) return
+    const { missionId } = deleteMissionInfo
     try {
       await deleteMission.mutateAsync(missionId)
       if (activeMissionId === missionId) {
         setActiveMissionId(null)
       }
       toast.success('Mission deleted completely')
+      setDeleteMissionInfo(null)
     } catch (err: any) {
       toast.error(err?.message ?? 'Failed to delete mission')
     }
@@ -463,6 +471,28 @@ export default function ProfilePage() {
       </div>
 
       
+      {/* Confirm Dialogs */}
+      {deletePlatformInfo && (
+        <ConfirmDialog
+          isOpen={!!deletePlatformInfo}
+          onOpenChange={(open) => !open && setDeletePlatformInfo(null)}
+          title={`Delete ${deletePlatformInfo.platform} History`}
+          description={`Are you sure you want to completely delete all rating history and contest logs for ${deletePlatformInfo.platform}? This cannot be undone.`}
+          onConfirm={performDeletePlatform}
+          isLoading={deletePlatformHistory.isPending}
+        />
+      )}
+      {deleteMissionInfo && (
+        <ConfirmDialog
+          isOpen={!!deleteMissionInfo}
+          onOpenChange={(open) => !open && setDeleteMissionInfo(null)}
+          title={`Delete Mission: ${deleteMissionInfo.title}`}
+          description="Are you sure you want to delete this mission? This will permanently delete all associated schedule data, problem logs, and contest logs."
+          onConfirm={performDeleteMission}
+          isLoading={deleteMission.isPending}
+        />
+      )}
+
       {/* Manage Ratings Modal */}
       <Dialog
         open={showRatingsModal}

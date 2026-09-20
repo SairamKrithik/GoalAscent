@@ -6,7 +6,7 @@ import { useMissions, useDayTasks, useContestLogs, useUpdateProblem, useUpsertDa
 import { useAppStore } from '@/lib/store'
 import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { ProblemCard } from '@/components/ProblemCard'
-import { Badge } from '@/components/ui/badge'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import type { DayTask, ProblemItem, ContestLog, ErrorEntry, Mission, ProblemStatus } from '@/lib/types'
@@ -567,7 +567,7 @@ export default function SchedulePage() {
   const [search, setSearch] = useState('')
   const [ratingMin, setRatingMin] = useState('')
   const [ratingMax, setRatingMax] = useState('')
-  const [actionsOpen, setActionsOpen] = useState(false)
+  const [deleteScheduleModalOpen, setDeleteScheduleModalOpen] = useState(false)
   const [showRestDays, setShowRestDays] = useState(false)
   const [selectedDayNum, setSelectedDayNum] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<'single' | 'all'>('single')
@@ -581,10 +581,10 @@ export default function SchedulePage() {
 
   async function handleDeleteSchedule() {
     if (!activeMissionId) return
-    if (!window.confirm('Are you sure you want to delete the schedule? This will remove all day tasks, problems, and contests for this mission. The mission itself will remain.')) return
     try {
       await deleteSchedule.mutateAsync(activeMissionId)
       toast.success('Schedule deleted')
+      setDeleteScheduleModalOpen(false)
     } catch (err: any) {
       toast.error(err.message || 'Failed to delete schedule')
     }
@@ -646,6 +646,16 @@ export default function SchedulePage() {
 
   return (
     <div className="flex flex-col h-full page-enter">
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={deleteScheduleModalOpen}
+        onOpenChange={setDeleteScheduleModalOpen}
+        title="Delete Schedule"
+        description="Are you sure you want to delete the schedule? This will remove all day tasks, problems, and contests for this mission. The mission itself will remain."
+        onConfirm={handleDeleteSchedule}
+        isLoading={deleteSchedule.isPending}
+      />
+
       {/* ── Sticky Header ──────────────────── */}
       <div className="shrink-0 flex items-center gap-2 px-6 pt-6 pb-4"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -694,14 +704,13 @@ export default function SchedulePage() {
                 >
                   {hasRealDays && (
                     <button
-                      onClick={() => { setActionsOpen(false); handleDeleteSchedule() }}
-                      disabled={deleteSchedule.isPending}
+                      onClick={() => { setActionsOpen(false); setDeleteScheduleModalOpen(true) }}
                       className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[13px] text-[#EF4444] hover:bg-[#EF4444]/[0.06] transition-colors duration-100 disabled:opacity-50"
                     >
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
                       </svg>
-                      {deleteSchedule.isPending ? 'Deleting…' : 'Delete Schedule'}
+                      Delete Schedule
                     </button>
                   )}
                 </div>
