@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useProfile, useProfileStats, useMissions, useCreateMission, useUpdateProfile, useDeleteMission, useImportSchedule, useUserPlatformRatings, useTogglePinRating, useDeletePlatformHistory, type CreateMissionInput } from '@/lib/queries'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAppStore } from '@/lib/store'
 import { KPICard } from '@/components/KPICard'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Dialog } from '@/components/ui/dialog'
 import { toast } from 'sonner'
@@ -67,6 +68,15 @@ export default function ProfilePage() {
   // Profile editing state
   const [deletePlatformInfo, setDeletePlatformInfo] = useState<{ platform: string } | null>(null)
   const [deleteMissionInfo, setDeleteMissionInfo] = useState<{ missionId: string; title: string } | null>(null)
+  const [editingName, setEditingName] = useState(false)
+  const [nameValue, setNameValue] = useState('')
+
+  // Sync profile name when loaded
+  useEffect(() => {
+    if (profile?.display_name) {
+      setNameValue(profile.display_name)
+    }
+  }, [profile?.display_name])
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)

@@ -8,6 +8,7 @@ import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { ProblemCard } from '@/components/ProblemCard'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { toast } from 'sonner'
 import type { DayTask, ProblemItem, ContestLog, ErrorEntry, Mission, ProblemStatus } from '@/lib/types'
 
@@ -568,6 +569,7 @@ export default function SchedulePage() {
   const [ratingMin, setRatingMin] = useState('')
   const [ratingMax, setRatingMax] = useState('')
   const [deleteScheduleModalOpen, setDeleteScheduleModalOpen] = useState(false)
+  const [actionsOpen, setActionsOpen] = useState(false)
   const [showRestDays, setShowRestDays] = useState(false)
   const [selectedDayNum, setSelectedDayNum] = useState<number | null>(null)
   const [viewMode, setViewMode] = useState<'single' | 'all'>('single')
