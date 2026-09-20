@@ -22,6 +22,7 @@ goalascent/
 │   ├── MissionSwitcher.tsx → dropdown to switch active mission
 │   ├── ProblemCard.tsx     → problem row with status toggle, tag, struggle timer
 │   ├── StruggleTimerModal.tsx → countdown timer modal for problem solving
+│   ├── ConfirmDialog.tsx   → reusable custom confirm modal replacing native prompts
 │   ├── RatingChart.tsx     → Recharts line chart for rating trajectory
 │   ├── KPICard.tsx         → stat tile (label/value/subtext)
 │   ├── Logo.tsx            → app logo SVG
@@ -53,6 +54,7 @@ goalascent/
 | `middleware.ts` | Supabase SSR auth guard; routes: `/dashboard`,`/schedule`,`/contests`,`/review`,`/profile` |
 | `app/(app)/layout.tsx` | Authenticated app shell with `AppNav` |
 | `components/ProblemCard.tsx` | Core interactive component — problem status, tags, struggle timer |
+| `components/ConfirmDialog.tsx` | App-wide custom confirmation dialog for destructive actions |
 | `components/StruggleTimerModal.tsx` | Countdown timer that writes `struggle_time_mins` on completion |
 | `lib/importUtils.ts` | Parses `plan.json` format into `ImportedMission` for bulk upload |
 
@@ -102,7 +104,7 @@ lib/queries.ts → lib/types.ts
 
 ## Authentication
 
-- **Supabase Auth** (email/password + OAuth)
+- **Supabase Auth** (email/password + Magic Link) - GitHub OAuth option removed.
 - `middleware.ts` — server-side session refresh on every request; redirects unauthenticated users to `/login`, authenticated users away from `/login`
 - `lib/supabase/` — separate browser client (`createClient()`) and server client factories
 - All DB tables protected by Row Level Security (RLS) — users can only access their own data

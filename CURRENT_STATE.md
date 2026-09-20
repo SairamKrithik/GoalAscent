@@ -16,7 +16,7 @@ Last updated: 2026-09-20
 - Capacitor Android project scaffolded
 
 ### Pages & Features
-- **Login page** (`/login`) — Supabase Auth UI
+- **Login page** (`/login`) — Supabase Auth UI (Magic Link + Email/Password ONLY. GitHub auth removed)
 - **Dashboard** (`/dashboard`) — Mission KPIs, rating progress bar, difficulty distribution chart (Recharts bar), contest error taxonomy (pie chart), rating trajectory chart
 - **Schedule** (`/schedule`) — Day-by-day problem list with status filters (All/Pending/In Progress/Done/Skipped), search, rating range filter; contest day cards with log entry form
 - **Contests** (`/contests`) — Contest log list per mission; manual contest log form with error taxonomy entries
@@ -27,6 +27,7 @@ Last updated: 2026-09-20
 - **Problem Card** (`ProblemCard`) — Status toggle, GREEN/YELLOW/RED tag, struggle timer trigger, editorial flag, bottleneck note, external link
 - **JSON Import** (`lib/importUtils.ts`) — Parses `plan.json` format and bulk-upserts day_tasks + problem_items
 - **Rating Chart** (`RatingChart`) — Recharts line chart showing contest rating over time vs. target
+- **Custom Confirm Dialog** (`ConfirmDialog`) — Reusable responsive modal replacing native browser `confirm()` prompts for destructive actions
 
 ### Data Layer
 - All CRUD operations in `lib/queries.ts`:
@@ -66,8 +67,4 @@ Not determined from repository. (No branch info or WIP indicators found.)
 
 ## Current Focus
 
-Not determined from repository. Most recent file modifications (Sep 20, 2026):
-- `lib/queries.ts` — Added `useDeletePlatformHistory` to delete platform history, with exact count enforcement logging.
-- `app/(app)/profile/page.tsx` — UI support for `useDeletePlatformHistory`.
-- `app/(app)/dashboard/page.tsx` — Pinned platforms support (rating dashboard widget).
-- `supabase/schema.sql` — Added missing RLS policies (`delete`, `update` etc.) for `user_platform_ratings`.
+Replaced native `confirm()` dialogs across the app with a styled `ConfirmDialog` component, and removed GitHub auth login option.
