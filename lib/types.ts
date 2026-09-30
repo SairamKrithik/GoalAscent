@@ -178,6 +178,8 @@ export interface ImportedMission {
 }
 
 // Platform color map
+export const PLATFORMS = ['Codeforces', 'LeetCode', 'AtCoder', 'HackerRank', 'CodeChef', 'Other'] as const
+
 export const PLATFORM_COLORS: Record<string, string> = {
   LeetCode: '#FFA116',
   Codeforces: '#1F8DD6',

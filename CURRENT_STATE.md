@@ -1,6 +1,6 @@
 # Current State — GoalAscent
 
-Last updated: 2026-09-20
+Last updated: 2026-09-29
 
 ## Completed
 
@@ -19,9 +19,9 @@ Last updated: 2026-09-20
 - **Login page** (`/login`) — Supabase Auth UI (Magic Link + Email/Password ONLY. GitHub auth removed)
 - **Dashboard** (`/dashboard`) — Mission KPIs, rating progress bar, difficulty distribution chart (Recharts bar), contest error taxonomy (pie chart), rating trajectory chart
 - **Schedule** (`/schedule`) — Day-by-day problem list with status filters (All/Pending/In Progress/Done/Skipped), search, rating range filter; contest day cards with log entry form
-- **Contests** (`/contests`) — Contest log list per mission; manual contest log form with error taxonomy entries
+- **Contests** (`/contests`) — Contest log list per mission; manual contest log form with error taxonomy entries; `rating_delta` is auto-calculated from `new_rating` minus current platform rating (no manual delta input); syncs `user_platform_ratings` on submit
 - **Review** (`/review`) — Spaced repetition queue (due today, unresolved RED/YELLOW); resolve with new tag
-- **Profile** (`/profile`) — User stats, mission list with create/delete; profile display name + avatar
+- **Profile** (`/profile`) — User stats, mission list with create/delete; profile display name + avatar; platform rating management (add/edit ratings per platform via `user_platform_ratings`; baseline rating auto-populated from platform global rating on mission creation)
 - **Mission Switcher** — Dropdown to switch active mission across all pages
 - **Struggle Timer** — Countdown timer modal (`StruggleTimerModal`) triggered from `ProblemCard`; writes `struggle_time_mins` to DB on completion
 - **Problem Card** (`ProblemCard`) — Status toggle, GREEN/YELLOW/RED tag, struggle timer trigger, editorial flag, bottleneck note, external link
@@ -35,6 +35,7 @@ Last updated: 2026-09-20
   - `useDayTasks`, `useUpsertDayTask`
   - `useProblemItem`, `useUpdateProblem`
   - `useContestLogs`, `useCreateContestLog`
+  - `useUserPlatformRatings`, `useUpsertUserPlatformRating`, `useDeleteUserPlatformRating`
   - `useReviewQueue`, `useResolveReview`
   - `useProfile`, `useProfileStats`, `useUpdateProfile`
   - `useImportSchedule`, `useDeleteSchedule`
@@ -67,4 +68,4 @@ Not determined from repository. (No branch info or WIP indicators found.)
 
 ## Current Focus
 
-Replaced native `confirm()` dialogs across the app with a styled `ConfirmDialog` component, and removed GitHub auth login option.
+Improved platform rating UX: contest log form now accepts new_rating and auto-computes rating_delta; profile page added explicit platform rating management UI (add/edit/delete per platform).

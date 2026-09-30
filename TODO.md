@@ -11,6 +11,10 @@
 
 - **`MissionTemplate` type without DB table** — `lib/types.ts` exports `MissionTemplate` interface and `missions` table has `forked_from_template_id`, but no `mission_templates` table exists in `schema.sql`. Either add the table or remove the orphaned type.
 
+- **Verify `useCreateContestLog` upserts `user_platform_ratings`** — The contest log submit handler computes `rating_delta` client-side and passes `new_rating` to `createLog.mutateAsync`. Confirm that `useCreateContestLog` in `lib/queries.ts` actually upserts the `user_platform_ratings` table with the updated rating after each contest log submission, or add the upsert if it is missing.
+
+- **Initial platform rating for new users** — Profile page UI for adding/editing `user_platform_ratings` exists. Ensure that when a mission is created for the first time, if no platform rating exists, the user is prompted or directed to set it before logging their first contest (otherwise `rating_delta` will silently compute against 0).
+
 ## Medium Priority
 
 - **Streak tracking implementation** — `profiles.current_streak_days` and `last_active_date` exist in DB but nothing updates them. Implement an update call when a problem is marked Done or a day is completed.

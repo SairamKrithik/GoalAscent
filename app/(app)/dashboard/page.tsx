@@ -1,6 +1,6 @@
 'use client'
 
-import { useMissions, useMission, useDayTasks, useContestLogs, useReviewQueue, useUserPlatformRatings } from '@/lib/queries'
+import { useMissions, useMission, useDayTasks, useContestLogs, useReviewQueue, useUserPlatformRatings, useProfile } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
 import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { KPICard } from '@/components/KPICard'
@@ -12,7 +12,161 @@ import {
 } from 'recharts'
 import { format, differenceInCalendarDays, parseISO } from 'date-fns'
 import { ERROR_CATEGORIES, PLATFORM_COLORS } from '@/lib/types'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
+import ReactConfetti from 'react-confetti'
+import { toPng } from 'html-to-image'
+import type { Mission, ContestLog } from '@/lib/types'
+import { ExportCard, buildExportChartData } from '@/components/ExportCard'
+
+const CELEBRATED_KEY = 'celebrated_missions'
+
+function getCelebrated(): Set<string> {
+  try {
+    const raw = localStorage.getItem(CELEBRATED_KEY)
+    return raw ? new Set(JSON.parse(raw) as string[]) : new Set()
+  } catch {
+    return new Set()
+  }
+}
+
+function markCelebrated(missionId: string) {
+  try {
+    const s = getCelebrated()
+    s.add(missionId)
+    localStorage.setItem(CELEBRATED_KEY, JSON.stringify([...s]))
+  } catch {
+    // localStorage unavailable — non-fatal
+  }
+}
+
+interface CelebrationModalProps {
+  mission: Mission
+  contestLogs: ContestLog[]
+  achievedRating: number
+  displayName: string
+  avatarUrl: string | null
+  onClose: () => void
+}
+
+function CelebrationModal({ mission, contestLogs, achievedRating, displayName, avatarUrl, onClose }: CelebrationModalProps) {
+  const cardRef = useRef<HTMLDivElement>(null)
+  const [downloading, setDownloading] = useState(false)
+  const [winSize, setWinSize] = useState({ w: 0, h: 0 })
+  const [confettiRunning, setConfettiRunning] = useState(true)
+
+  useEffect(() => {
+    setWinSize({ w: window.innerWidth, h: window.innerHeight })
+    const t = setTimeout(() => setConfettiRunning(false), 6000)
+    return () => clearTimeout(t)
+  }, [])
+
+  async function handleDownload() {
+    if (!cardRef.current) return
+    setDownloading(true)
+    try {
+      const dataUrl = await toPng(cardRef.current, { pixelRatio: 2, cacheBust: true })
+      const a = document.createElement('a')
+      a.href = dataUrl
+      a.download = `goalascent-${mission.platform.toLowerCase()}-${achievedRating}.png`
+      a.click()
+    } catch {
+      // Download failed silently — non-fatal
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose() }}
+    >
+      {confettiRunning && (
+        <ReactConfetti
+          width={winSize.w}
+          height={winSize.h}
+          recycle={confettiRunning}
+          numberOfPieces={220}
+          colors={['#3B82F6', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6', '#22C55E']}
+          style={{ position: 'fixed', top: 0, left: 0, zIndex: 101, pointerEvents: 'none' }}
+        />
+      )}
+
+      <div
+        className="relative z-[102] mx-4 rounded-[20px] overflow-hidden shadow-2xl"
+        style={{ maxWidth: 580, width: '100%', background: '#080D18', border: '1px solid rgba(255,255,255,0.1)' }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+          style={{ background: 'rgba(255,255,255,0.07)' }}
+          aria-label="Close"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9AA7BA" strokeWidth="2.5" strokeLinecap="round">
+            <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
+        {/* Celebration header */}
+        <div className="px-7 pt-7 pb-5 text-center">
+          <div className="text-4xl mb-3">🎉</div>
+          <h2 className="text-[22px] font-bold text-[#F5F7FA] mb-1">Congratulations!</h2>
+          <p className="text-[14px] text-[#9AA7BA]">
+            You&apos;ve reached your target rating of{' '}
+            <span className="text-[#60A5FA] font-bold">{mission.target_rating}</span> on {mission.platform}!
+          </p>
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-[13px] font-semibold"
+            style={{ background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)', color: '#10B981' }}>
+            <span>★</span>
+            <span>{mission.baseline_rating} → {achievedRating} (+{achievedRating - (mission.baseline_rating ?? 0)})</span>
+          </div>
+        </div>
+
+        {/* Export card preview */}
+        <div className="px-7 pb-5">
+          <p className="text-[11px] text-[#65738A] mb-3 font-medium">SHAREABLE CARD PREVIEW</p>
+          <div className="rounded-[12px] overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.07)' }}>
+            <div ref={cardRef} style={{ display: 'inline-block' }}>
+              <ExportCard
+                mission={mission}
+                contestLogs={contestLogs}
+                achievedRating={achievedRating}
+                displayName={displayName}
+                avatarUrl={avatarUrl}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="px-7 pb-7 flex gap-3">
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex-1 flex items-center justify-center gap-2 rounded-[12px] py-3 text-[14px] font-semibold transition-opacity"
+            style={{ background: 'linear-gradient(135deg, #3B82F6, #1D4ED8)', color: '#fff', opacity: downloading ? 0.7 : 1 }}
+          >
+            {downloading ? (
+              <><span className="w-4 h-4 rounded-full border-2 border-white/30 border-t-white animate-spin inline-block" /> Generating…</>
+            ) : (
+              <><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></svg> Export as Image</>
+            )}
+          </button>
+          <button
+            onClick={onClose}
+            className="px-5 rounded-[12px] py-3 text-[14px] font-medium transition-colors"
+            style={{ background: 'rgba(255,255,255,0.06)', color: '#9AA7BA', border: '1px solid rgba(255,255,255,0.08)' }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 
 const RATING_BUCKETS = [
   { label: '<1400',    min: 0,    max: 1399,    color: '#65738A' },
@@ -67,6 +221,9 @@ export default function DashboardPage() {
   const { data: contestLogs = [] } = useContestLogs(activeMissionId)
   const { data: reviewQueue = [] } = useReviewQueue()
   const { data: ratings = [] } = useUserPlatformRatings()
+  const { data: profile } = useProfile()
+
+  const [showCelebration, setShowCelebration] = useState(false)
 
   const pinnedRatings = ratings.filter(r => r.is_pinned).slice(0, 2)
 
@@ -77,6 +234,15 @@ export default function DashboardPage() {
       setActiveMissionId(firstActive.mission_id)
     }
   }, [activeMissionId, missions, setActiveMissionId])
+
+  // Celebration: fire once when the user reaches target rating for a given mission
+  useEffect(() => {
+    if (!mission || !mission.target_rating || contestLogs.length === 0) return
+    const latestRating = contestLogs[contestLogs.length - 1].new_rating
+    if (latestRating === null || latestRating < mission.target_rating) return
+    if (getCelebrated().has(mission.mission_id)) return
+    setShowCelebration(true)
+  }, [mission, contestLogs])
 
   // KPI computations
   const allProblems = dayTasks.flatMap((d) => d.problem_items ?? [])
@@ -125,8 +291,28 @@ export default function DashboardPage() {
         : 0)
     : 0
 
+  const handleCloseCelebration = useCallback(() => {
+    if (mission) markCelebrated(mission.mission_id)
+    setShowCelebration(false)
+  }, [mission])
+
+  const achievedRating = contestLogs.length > 0 ? (contestLogs[contestLogs.length - 1].new_rating ?? 0) : 0
+  const displayName = profile?.display_name || profile?.handle || 'Achiever'
+  const avatarUrl = profile?.avatar_url ?? null
+
   return (
     <div className="flex flex-col h-full page-enter">
+      {showCelebration && mission && (
+        <CelebrationModal
+          mission={mission}
+          contestLogs={contestLogs}
+          achievedRating={achievedRating}
+          displayName={displayName}
+          avatarUrl={avatarUrl}
+          onClose={handleCloseCelebration}
+        />
+      )}
+
       {/* ── Sticky Header ──────────────────── */}
       <div className="shrink-0 flex flex-col sm:flex-row sm:items-start gap-3 px-6 pt-6 pb-4"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>

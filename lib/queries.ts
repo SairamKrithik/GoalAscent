@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
 import type {
   Mission, DayTask, ProblemItem, ContestLog, ReviewQueueItem, Profile, ProfileStats,
-  ImportedMission, UserPlatformRating,
+  ImportedMission, UserPlatformRating, MissionStatus,
 } from '@/lib/types'
 
 const supabase = createClient()
@@ -108,6 +108,21 @@ export function useUserPlatformRatings() {
   })
 }
 
+export function useUpsertUserPlatformRating() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ platform, rating }: { platform: string; rating: number }) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+      const { error } = await supabase
+        .from('user_platform_ratings')
+        .upsert({ user_id: user.id, platform, rating }, { onConflict: 'user_id,platform' })
+      if (error) throw error
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['user_platform_ratings'] }),
+  })
+}
+
 // ─── Contest Logs ─────────────────────────────────────────────────────────────
 
 export function useTogglePinRating() {
@@ -137,15 +152,13 @@ export function useDeletePlatformHistory() {
       if (!user) throw new Error('Not authenticated')
 
       // Delete user_platform_ratings entry
-      const { error: ratingError, count } = await supabase
+      const { error: ratingError } = await supabase
         .from('user_platform_ratings')
-        .delete({ count: 'exact' })
+        .delete()
         .eq('user_id', user.id)
         .eq('platform', platform)
 
       if (ratingError) throw ratingError
-
-      console.log(`Deleted ${count} rating records for platform ${platform}`)
 
       // Delete contest logs for this platform
       // RLS safely ensures only the current user's contest logs are deleted
@@ -173,6 +186,22 @@ export function useContestLogs(missionId: string | null) {
         .from('contest_logs')
         .select('*')
         .eq('mission_id', missionId!)
+        .order('contest_date', { ascending: true })
+      if (error) throw error
+      return data as ContestLog[]
+    },
+  })
+}
+
+// Fetches all contest logs for the current user across all missions.
+// Used by the Achievements page to build per-mission log maps.
+export function useAllContestLogs() {
+  return useQuery({
+    queryKey: ['contest_logs', 'all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('contest_logs')
+        .select('*')
         .order('contest_date', { ascending: true })
       if (error) throw error
       return data as ContestLog[]
@@ -321,6 +350,24 @@ export function useCreateMission() {
       return data as Mission
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['missions'] }),
+  })
+}
+
+// Single point for all mission status transitions (Active → Completed, Active → Archived, etc.)
+export function useUpdateMissionStatus() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ missionId, status }: { missionId: string; status: MissionStatus }) => {
+      const { error } = await supabase
+        .from('missions')
+        .update({ status })
+        .eq('mission_id', missionId)
+      if (error) throw error
+    },
+    onSuccess: (_data, { missionId }) => {
+      qc.invalidateQueries({ queryKey: ['missions'] })
+      qc.invalidateQueries({ queryKey: ['missions', missionId] })
+    },
   })
 }
 

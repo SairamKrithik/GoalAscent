@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useProfile, useProfileStats, useMissions, useCreateMission, useUpdateProfile, useDeleteMission, useImportSchedule, useUserPlatformRatings, useTogglePinRating, useDeletePlatformHistory, type CreateMissionInput } from '@/lib/queries'
+import { useProfile, useProfileStats, useMissions, useCreateMission, useUpdateProfile, useDeleteMission, useImportSchedule, useUserPlatformRatings, useUpsertUserPlatformRating, useTogglePinRating, useDeletePlatformHistory, type CreateMissionInput } from '@/lib/queries'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAppStore } from '@/lib/store'
 import { KPICard } from '@/components/KPICard'
@@ -12,8 +12,10 @@ import { Dialog } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { validateImport, IMPORT_EXAMPLE } from '@/lib/importUtils'
 import type { ImportedMission } from '@/lib/types'
+import { PLATFORMS } from '@/lib/types'
 
 interface NewMissionForm {
   platform: string
@@ -50,6 +52,7 @@ export default function ProfilePage() {
   const createMission = useCreateMission()
   const updateProfile = useUpdateProfile()
   const togglePinRating = useTogglePinRating()
+  const upsertRating = useUpsertUserPlatformRating()
   const deletePlatformHistory = useDeletePlatformHistory()
   const deleteMission = useDeleteMission()
   const importSchedule = useImportSchedule()
@@ -64,6 +67,11 @@ export default function ProfilePage() {
   const [showExample, setShowExample] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [showRatingsModal, setShowRatingsModal] = useState(false)
+  const [addRatingPlatform, setAddRatingPlatform] = useState('Codeforces')
+  const [addRatingValue, setAddRatingValue] = useState('')
+  const [showAddRatingForm, setShowAddRatingForm] = useState(false)
+  const [editingRatingPlatform, setEditingRatingPlatform] = useState<string | null>(null)
+  const [editingRatingValue, setEditingRatingValue] = useState('')
 
   // Profile editing state
   const [deletePlatformInfo, setDeletePlatformInfo] = useState<{ platform: string } | null>(null)
@@ -77,6 +85,17 @@ export default function ProfilePage() {
       setNameValue(profile.display_name)
     }
   }, [profile?.display_name])
+
+  // Auto-populate baseline rating when platform changes
+  useEffect(() => {
+    if (ratings && showNewMission) {
+      const ratingObj = ratings.find((r) => r.platform.toLowerCase() === missionForm.platform.toLowerCase());
+      if (ratingObj && missionForm.baseline_rating === '') {
+        setMissionForm((prev) => ({ ...prev, baseline_rating: ratingObj.rating.toString() }));
+      }
+    }
+  }, [missionForm.platform, ratings, showNewMission]);
+
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -110,6 +129,37 @@ export default function ProfilePage() {
       setDeletePlatformInfo(null)
     } catch (err: any) {
       toast.error(err?.message ?? `Failed to delete ${platform} history`)
+    }
+  }
+
+  async function handleAddRating() {
+    const rating = Number(addRatingValue)
+    if (!addRatingValue || isNaN(rating) || rating < 0) {
+      toast.error('Enter a valid rating')
+      return
+    }
+    try {
+      await upsertRating.mutateAsync({ platform: addRatingPlatform, rating })
+      toast.success(`${addRatingPlatform} rating saved`)
+      setAddRatingValue('')
+      setShowAddRatingForm(false)
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to save rating')
+    }
+  }
+
+  async function handleSaveEditRating(platform: string) {
+    const rating = Number(editingRatingValue)
+    if (!editingRatingValue || isNaN(rating) || rating < 0) {
+      toast.error('Enter a valid rating')
+      return
+    }
+    try {
+      await upsertRating.mutateAsync({ platform, rating })
+      toast.success(`${platform} rating updated`)
+      setEditingRatingPlatform(null)
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to update rating')
     }
   }
 
@@ -449,6 +499,24 @@ export default function ProfilePage() {
         </Button>
       </div>
 
+      {/* Achievements link */}
+      <div className="rounded-[16px] border p-5 flex items-center justify-between gap-4"
+        style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}>
+        <div>
+          <p className="text-[14px] font-semibold text-[#F5F7FA]">Achievements</p>
+          <p className="text-[12px] text-[#65738A] mt-0.5">
+            View completed missions and export shareable achievement cards
+          </p>
+        </div>
+        <Link
+          href="/achievements"
+          className="flex-none inline-flex items-center gap-1.5 rounded-[10px] px-3.5 py-2 text-[13px] font-semibold transition-opacity hover:opacity-80"
+          style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.15), rgba(245,158,11,0.08))', border: '1px solid rgba(251,191,36,0.25)', color: '#FCD34D' }}
+        >
+          🏆 View Achievements
+        </Link>
+      </div>
+
       {/* Your Missions */}
       <div className="mt-8">
         <h2 className="text-[16px] font-semibold text-[#F5F7FA] mb-4">Your Missions</h2>
@@ -506,31 +574,56 @@ export default function ProfilePage() {
       {/* Manage Ratings Modal */}
       <Dialog
         open={showRatingsModal}
-        onClose={() => setShowRatingsModal(false)}
+        onClose={() => { setShowRatingsModal(false); setEditingRatingPlatform(null); setShowAddRatingForm(false) }}
         title="Manage Platform Ratings"
         size="md"
       >
-        <div className="p-6">
-          <p className="text-[13px] text-[#65738A] mb-4">Pin up to 2 platforms to display on your dashboard.</p>
-          {(!ratings || ratings.length === 0) ? (
-            <div className="text-center py-8">
-              <p className="text-[14px] text-[#9AA7BA]">No ratings yet.</p>
-              <p className="text-[12px] text-[#65738A] mt-1">Log contests to track your ratings.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {ratings.map(r => (
+        <div className="p-6 space-y-5">
+          <p className="text-[13px] text-[#65738A]">Pin up to 2 platforms to display on your dashboard.</p>
+
+          {/* Existing ratings list */}
+          {(ratings ?? []).length > 0 && (
+            <div className="space-y-2">
+              {ratings!.map(r => (
                 <div key={r.platform} className="rounded-[12px] border p-4 flex items-center justify-between gap-4"
                   style={{ background: '#0F1523', borderColor: 'rgba(255,255,255,0.05)' }}>
                   <div className="flex-1 min-w-0">
-                     <p className="text-[15px] font-semibold text-[#F5F7FA] truncate">{r.platform}</p>
-                     <p className="text-[13px] text-[#65738A] mt-0.5">Rating: <span className="font-bold text-[#E2E8F0]">{r.rating}</span></p>
+                    <p className="text-[15px] font-semibold text-[#F5F7FA] truncate">{r.platform}</p>
+                    {editingRatingPlatform === r.platform ? (
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <input
+                          autoFocus
+                          type="number"
+                          className={inputCls + ' w-28'}
+                          style={inputStyle}
+                          value={editingRatingValue}
+                          onChange={(e) => setEditingRatingValue(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSaveEditRating(r.platform)
+                            if (e.key === 'Escape') setEditingRatingPlatform(null)
+                          }}
+                        />
+                        <Button variant="primary" size="sm" onClick={() => handleSaveEditRating(r.platform)} disabled={upsertRating.isPending}>
+                          {upsertRating.isPending ? '…' : 'Save'}
+                        </Button>
+                        <Button variant="secondary" size="sm" onClick={() => setEditingRatingPlatform(null)}>✕</Button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="text-[13px] text-[#65738A] mt-0.5 hover:text-[#F5F7FA] transition-colors text-left"
+                        title="Click to edit"
+                        onClick={() => { setEditingRatingPlatform(r.platform); setEditingRatingValue(r.rating.toString()) }}
+                      >
+                        Rating: <span className="font-bold text-[#E2E8F0]">{r.rating}</span> <span className="text-[11px] text-[#65738A]">(click to edit)</span>
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     <button
                       onClick={() => handleTogglePin(r.platform, !!r.is_pinned)}
                       className="p-2 transition-colors hover:bg-white/5 rounded-full outline-none"
-                      title={r.is_pinned ? "Unpin platform" : "Pin platform"}
+                      title={r.is_pinned ? 'Unpin platform' : 'Pin platform'}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill={r.is_pinned ? '#EAB308' : 'none'} stroke={r.is_pinned ? '#EAB308' : '#65738A'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
@@ -552,6 +645,53 @@ export default function ProfilePage() {
                 </div>
               ))}
             </div>
+          )}
+
+          {/* Add new platform rating */}
+          {showAddRatingForm ? (
+            <div className="rounded-[12px] border p-4 space-y-3"
+              style={{ background: '#0A1020', borderColor: 'rgba(255,255,255,0.07)' }}>
+              <div className="flex items-center justify-between">
+                <p className="text-[12px] font-medium text-[#65738A]">Add / update a platform rating</p>
+                <button
+                  type="button"
+                  onClick={() => { setShowAddRatingForm(false); setAddRatingValue('') }}
+                  className="text-[#65738A] hover:text-[#F5F7FA] transition-colors"
+                  title="Cancel"
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <select
+                  className={inputCls + ' flex-1 min-w-[140px]'}
+                  style={{ ...inputStyle, colorScheme: 'dark' }}
+                  value={addRatingPlatform}
+                  onChange={(e) => setAddRatingPlatform(e.target.value)}
+                >
+                  {PLATFORMS.map((p) => <option key={p}>{p}</option>)}
+                </select>
+                <input
+                  type="number"
+                  className={inputCls + ' w-28'}
+                  style={inputStyle}
+                  placeholder="Rating"
+                  value={addRatingValue}
+                  onChange={(e) => setAddRatingValue(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === 'Enter') handleAddRating() }}
+                  autoFocus
+                />
+                <Button variant="primary" size="sm" onClick={handleAddRating} disabled={upsertRating.isPending}>
+                  {upsertRating.isPending ? 'Saving…' : 'Save'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button variant="secondary" size="sm" onClick={() => setShowAddRatingForm(true)}>
+              + Add Rating
+            </Button>
           )}
         </div>
       </Dialog>

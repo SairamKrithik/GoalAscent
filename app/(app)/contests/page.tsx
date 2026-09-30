@@ -1,17 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { useMissions, useContestLogs, useCreateContestLog } from '@/lib/queries'
+import { useMissions, useContestLogs, useCreateContestLog, useUpdateMissionStatus, useUserPlatformRatings } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
 import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
-import { ERROR_CATEGORIES, PLATFORM_COLORS } from '@/lib/types'
-import { format, parseISO } from 'date-fns'
+import { ERROR_CATEGORIES, PLATFORM_COLORS, PLATFORMS } from '@/lib/types'
+import { format, parseISO, addDays } from 'date-fns'
 import { toast } from 'sonner'
-
-const PLATFORMS = ['Codeforces', 'LeetCode', 'AtCoder', 'HackerRank', 'CodeChef', 'Other']
 
 interface ErrorEntry {
   category: number
@@ -23,7 +21,7 @@ interface ContestFormState {
   contest_name: string
   contest_date: string
   new_rating: string
-  rating_delta: string
+  baseline_override: string
   problems_solved: string
   total_time_mins: string
   notes: string
@@ -35,7 +33,7 @@ const DEFAULT_FORM: ContestFormState = {
   contest_name: '',
   contest_date: new Date().toISOString().slice(0, 10),
   new_rating: '',
-  rating_delta: '',
+  baseline_override: '',
   problems_solved: '',
   total_time_mins: '',
   notes: '',
@@ -71,7 +69,9 @@ export default function ContestsPage() {
   const { activeMissionId, setActiveMissionId } = useAppStore()
   const { data: missions = [] } = useMissions()
   const { data: contestLogs = [], isLoading } = useContestLogs(activeMissionId)
+  const { data: ratings = [] } = useUserPlatformRatings()
   const createLog = useCreateContestLog()
+  const updateMissionStatus = useUpdateMissionStatus()
 
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState<ContestFormState>(DEFAULT_FORM)
@@ -109,19 +109,44 @@ export default function ContestsPage() {
     if (!form.contest_name || !form.contest_date) { toast.error('Contest name and date are required'); return }
 
     try {
+      const currentRatingObj = ratings.find((r) => r.platform.toLowerCase() === form.platform.toLowerCase())
+      const currentRating = currentRatingObj?.rating ?? (form.baseline_override ? Number(form.baseline_override) : 0)
+      const newRating = form.new_rating ? Number(form.new_rating) : null
+      const ratingDelta = newRating !== null ? newRating - currentRating : null
+
       await createLog.mutateAsync({
         mission_id: activeMissionId,
         platform: form.platform,
         contest_name: form.contest_name,
         contest_date: form.contest_date,
-        new_rating: form.new_rating ? Number(form.new_rating) : null,
-        rating_delta: form.rating_delta ? Number(form.rating_delta) : null,
+        new_rating: newRating,
+        rating_delta: ratingDelta,
         rank_percentile: null,
         problems_solved: form.problems_solved ? Number(form.problems_solved) : null,
         total_time_mins: form.total_time_mins ? Number(form.total_time_mins) : null,
         penalties: 0,
         error_entries: form.errors,
       } as any)
+
+      // Auto-complete mission when target rating is reached within the mission's duration
+      const activeMission = missions.find((m) => m.mission_id === activeMissionId)
+      if (
+        activeMission &&
+        activeMission.status === 'Active' &&
+        newRating !== null &&
+        activeMission.target_rating !== null &&
+        newRating >= activeMission.target_rating
+      ) {
+        const missionEndDate = addDays(parseISO(activeMission.start_date), activeMission.duration_days - 1)
+        const contestDate = parseISO(form.contest_date)
+        if (contestDate <= missionEndDate) {
+          await updateMissionStatus.mutateAsync({
+            missionId: activeMissionId,
+            status: 'Completed',
+          })
+        }
+      }
+
       toast.success('Contest log saved')
       setShowForm(false)
       setForm(DEFAULT_FORM)
@@ -268,20 +293,42 @@ export default function ContestsPage() {
             </div>
           </div>
 
+          {/* Platform rating context */}
+          {(() => {
+            const current = ratings.find((r) => r.platform.toLowerCase() === form.platform.toLowerCase())
+            if (current) {
+              return (
+                <p className="text-[12px] rounded-[8px] px-3 py-2" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)', color: '#60A5FA' }}>
+                  Current {form.platform} rating: <span className="font-bold">{current.rating}</span>. Enter your new rating after this contest to auto-compute the delta.
+                </p>
+              )
+            }
+            return (
+              <p className="text-[12px] rounded-[8px] px-3 py-2" style={{ background: 'rgba(234,179,8,0.08)', border: '1px solid rgba(234,179,8,0.15)', color: '#FCD34D' }}>
+                No {form.platform} rating on record. Enter your <strong>current rating before this contest</strong> in the baseline field below, then enter your new rating after the contest — the delta will be calculated automatically. You can also set your rating in <strong>Profile → Manage Ratings</strong>.
+              </p>
+            )
+          })()}
+
           <div className="grid grid-cols-2 gap-3">
+            {(() => {
+              const hasRecord = ratings.some((r) => r.platform.toLowerCase() === form.platform.toLowerCase())
+              return !hasRecord ? (
+                <div>
+                  <label className={labelCls}>Baseline Rating (before contest)</label>
+                  <input
+                    type="number"
+                    className={inputCls}
+                    style={inputStyle}
+                    placeholder="Your rating before this contest"
+                    value={form.baseline_override}
+                    onChange={(e) => patchForm({ baseline_override: e.target.value })}
+                  />
+                </div>
+              ) : null
+            })()}
             <div>
-              <label className={labelCls}>Rating Delta</label>
-              <input
-                type="number"
-                className={inputCls}
-                style={inputStyle}
-                placeholder="+60 or -30"
-                value={form.rating_delta}
-                onChange={(e) => patchForm({ rating_delta: e.target.value })}
-              />
-            </div>
-            <div>
-              <label className={labelCls}>New Rating</label>
+              <label className={labelCls}>New Rating (after contest)</label>
               <input
                 type="number"
                 className={inputCls}

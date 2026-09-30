@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="flex h-full flex-col">
+      <body className="flex h-full flex-col" suppressHydrationWarning>
           <ReactQueryProvider>
             <CapacitorSplashScreen />
             <NextTopLoader color="#FFF" height={3} showSpinner={false} />
