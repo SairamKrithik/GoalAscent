@@ -98,7 +98,7 @@ export default function ProfilePage() {
 
   // Profile editing state
   const [deletePlatformInfo, setDeletePlatformInfo] = useState<{ platform: string } | null>(null)
-  const [abandonMissionInfo, setAbandonMissionInfo] = useState<{ missionId: string; title: string } | null>(null)
+  const [abandonMissionInfo, setAbandonMissionInfo] = useState<{ missionId: string; title: string, isForking?: boolean } | null>(null)
   const [editingName, setEditingName] = useState(false)
   const [nameValue, setNameValue] = useState('')
 
@@ -327,6 +327,17 @@ export default function ProfilePage() {
       toast.error('Select a shared mission to fork')
       return
     }
+
+    const activeMission = missions?.find(m => m.status === 'Active')
+    if (activeMission) {
+      setAbandonMissionInfo({ missionId: activeMission.mission_id, title: activeMission.title, isForking: true })
+      return
+    }
+
+    await performFork()
+  }
+
+  async function performFork() {
     const sharedMissionData = sharedMissions?.find(sm => sm.mission_id === selectedSharedMissionId)
     if (!sharedMissionData) {
       toast.error('Mission data not found')
@@ -474,14 +485,20 @@ export default function ProfilePage() {
 
   async function performAbandonMission() {
     if (!abandonMissionInfo) return
-    const { missionId } = abandonMissionInfo
+    const { missionId, isForking } = abandonMissionInfo
     try {
       await updateMissionStatus.mutateAsync({ missionId, status: 'Archived' })
       if (activeMissionId === missionId) {
         setActiveMissionId(null)
       }
       toast.success('Mission abandoned')
+
+      const wasForking = isForking;
       setAbandonMissionInfo(null)
+
+      if (wasForking) {
+        await performFork();
+      }
     } catch (err: any) {
       toast.error(err?.message ?? 'Failed to abandon mission')
     }
@@ -716,17 +733,12 @@ export default function ProfilePage() {
             variant="secondary"
             size="sm"
             onClick={() => {
-              if (missions?.some((m) => m.status === 'Active')) {
-                toast.error('Abandon your active mission first before starting a new one')
-                return
-              }
               setBrowseSearch('')
               setBrowsePage(0)
               setSelectedSharedMissionId(null)
               setShowBrowseModal(true)
             }}
             className="flex-none"
-            disabled={missions?.some((m) => m.status === 'Active')}
           >
             Browse Shared
           </Button>
@@ -832,9 +844,11 @@ export default function ProfilePage() {
           isOpen={!!abandonMissionInfo}
           onOpenChange={(open) => !open && setAbandonMissionInfo(null)}
           title={`Abandon Mission: ${abandonMissionInfo.title}`}
-          description="Are you sure you want to abandon this mission? It will be archived and you will be able to start a new mission. Your schedule data, problem logs, and contest logs will be preserved."
+          description={abandonMissionInfo.isForking
+            ? "You already have an Active mission. Are you sure you want to abandon it to fork this shared mission? Your schedule data, problem logs, and contest logs will be preserved."
+            : "Are you sure you want to abandon this mission? It will be archived and you will be able to start a new mission. Your schedule data, problem logs, and contest logs will be preserved."}
           onConfirm={performAbandonMission}
-          isLoading={updateMissionStatus.isPending}
+          isLoading={updateMissionStatus.isPending || (abandonMissionInfo.isForking ? (createMission.isPending || importSchedule.isPending) : false)}
         />
       )}
 
