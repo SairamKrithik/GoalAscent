@@ -80,6 +80,30 @@ export function useProblemItem(problemId: string) {
 export function useUpdateProblem() {
   const qc = useQueryClient()
   return useMutation({
+    onMutate: async ({ problemId, patch }) => {
+      await qc.cancelQueries({ queryKey: ['day_tasks'] })
+      const previousDayTasks = qc.getQueriesData({ queryKey: ['day_tasks'] })
+
+      // Optimistically update all cached day_tasks that contain this problem
+      qc.setQueriesData({ queryKey: ['day_tasks'] }, (oldData: any) => {
+        if (!oldData) return oldData
+        return oldData.map((day: any) => ({
+          ...day,
+          problem_items: day.problem_items?.map((p: any) =>
+            p.problem_id === problemId ? { ...p, ...patch } : p,
+          ),
+        }))
+      })
+
+      return { previousDayTasks }
+    },
+    onError: (_err, _newProblem, context) => {
+      if (context?.previousDayTasks) {
+        context.previousDayTasks.forEach(([queryKey, data]) => {
+          qc.setQueryData(queryKey, data)
+        })
+      }
+    },
     mutationFn: async ({ problemId, patch }: { problemId: string; patch: Partial<ProblemItem> }) => {
       const { error } = await supabase
         .from('problem_items')
@@ -87,7 +111,7 @@ export function useUpdateProblem() {
         .eq('problem_id', problemId)
       if (error) throw error
     },
-    onSuccess: (_data, { patch }) => {
+    onSettled: (_data, _error, { patch }) => {
       qc.invalidateQueries({ queryKey: ['day_tasks'] })
       if (patch.tag) qc.invalidateQueries({ queryKey: ['review_queue'] })
     },
@@ -572,6 +596,24 @@ export function useSharedMissionSchedule(missionId: string | null) {
 export function useUpsertDayTask() {
   const qc = useQueryClient()
   return useMutation({
+    onMutate: async ({ missionId, dayNumber, patch }) => {
+      await qc.cancelQueries({ queryKey: ['day_tasks', missionId] })
+      const previousData = qc.getQueryData(['day_tasks', missionId])
+
+      qc.setQueryData(['day_tasks', missionId], (oldData: any) => {
+        if (!oldData) return oldData
+        return oldData.map((day: any) =>
+          day.day_number === dayNumber ? { ...day, ...patch } : day
+        )
+      })
+
+      return { previousData }
+    },
+    onError: (_err, { missionId }, context) => {
+      if (context?.previousData) {
+        qc.setQueryData(['day_tasks', missionId], context.previousData)
+      }
+    },
     mutationFn: async ({
       missionId,
       dayNumber,
@@ -592,7 +634,7 @@ export function useUpsertDayTask() {
       if (error) throw error
       return data as DayTask
     },
-    onSuccess: (_data, { missionId }) =>
+    onSettled: (_data, _error, { missionId }) =>
       qc.invalidateQueries({ queryKey: ['day_tasks', missionId] }),
   })
 }

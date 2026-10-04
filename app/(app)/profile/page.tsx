@@ -718,7 +718,7 @@ export default function ProfilePage() {
       })()}
 
       {/* New mission CTA */}
-      <div className="rounded-[16px] border p-5 flex items-center justify-between gap-4"
+      <div className="rounded-[16px] border p-5 flex flex-col sm:flex-row sm:items-center items-start justify-between gap-4"
         style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}>
         <div>
           <p className="text-[14px] font-semibold text-[#F5F7FA]">New Mission</p>
@@ -728,7 +728,7 @@ export default function ProfilePage() {
               : 'Create a time-boxed training plan with a rating target'}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="secondary"
             size="sm"
@@ -764,7 +764,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Achievements link */}
-      <div className="rounded-[16px] border p-5 flex items-center justify-between gap-4"
+      <div className="rounded-[16px] border p-5 flex flex-col sm:flex-row sm:items-center items-start justify-between gap-4"
         style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}>
         <div>
           <p className="text-[14px] font-semibold text-[#F5F7FA]">Achievements</p>

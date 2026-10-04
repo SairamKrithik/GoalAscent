@@ -1,18 +1,17 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
-import { createClient } from '@/lib/supabase/client'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { ProblemItem, ProblemStatus, ReviewTag } from '@/lib/types'
 import { PLATFORM_COLORS } from '@/lib/types'
 import { cn } from '@/lib/utils'
 import { StruggleTimerModal } from '@/components/StruggleTimerModal'
+import { useUpdateProblem } from '@/lib/queries'
 
 interface ProblemCardProps {
   problem: ProblemItem
-  onUpdate?: (updated: ProblemItem) => void
 }
 
 const STATUS_CYCLE: Record<ProblemStatus, ProblemStatus> = {
@@ -34,26 +33,16 @@ const TAG_VARIANT_MAP: Record<ReviewTag, 'green' | 'yellow' | 'red'> = {
   RED: 'red',
 }
 
-export function ProblemCard({ problem: initial, onUpdate }: ProblemCardProps) {
-  const [problem, setProblem] = useState(initial)
+export function ProblemCard({ problem }: ProblemCardProps) {
   const [timerOpen, setTimerOpen] = useState(false)
-  const [notesOpen, setNotesOpen] = useState(false)
-  const supabase = createClient()
+
+  const updateProblem = useUpdateProblem()
 
   async function patchProblem(patch: Partial<ProblemItem>) {
-    const updated = { ...problem, ...patch } as ProblemItem
-    setProblem(updated) // optimistic
-
-    const { error } = await supabase
-      .from('problem_items')
-      .update(patch)
-      .eq('problem_id', problem.problem_id)
-
-    if (error) {
-      setProblem(problem) // rollback
-      toast.error('Failed to update: ' + error.message)
-    } else {
-      onUpdate?.(updated)
+    try {
+      await updateProblem.mutateAsync({ problemId: problem.problem_id, patch })
+    } catch (error) {
+      toast.error('Failed to update: ' + (error as Error).message)
     }
   }
 

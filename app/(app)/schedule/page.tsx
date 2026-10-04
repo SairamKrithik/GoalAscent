@@ -1,9 +1,9 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
-import { Suspense, useState, useMemo, useEffect } from 'react'
+import { Suspense, useState, useMemo, useEffect, useRef } from 'react'
 import { differenceInCalendarDays, startOfDay, parseISO } from 'date-fns'
-import { useMissions, useDayTasks, useContestLogs, useUpdateProblem, useUpsertDayTask, useCreateContestLog, useDeleteSchedule } from '@/lib/queries'
+import { useMissions, useDayTasks, useContestLogs, useUpsertDayTask, useCreateContestLog, useDeleteSchedule } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
 import { ProblemCard } from '@/components/ProblemCard'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
@@ -284,7 +284,6 @@ interface ProblemDayCardProps {
 
 function ProblemDayCard({ day, missionId, startDate, statusFilter, search, ratingMin, ratingMax }: ProblemDayCardProps) {
   const upsertDayTask = useUpsertDayTask()
-  const updateProblem = useUpdateProblem()
   const [expanded, setExpanded] = useState(false)
 
   const filteredProblems = useMemo(() => {
@@ -301,7 +300,29 @@ function ProblemDayCard({ day, missionId, startDate, statusFilter, search, ratin
   const totalCount = day.problem_items.length
   const allDone = totalCount > 0 && doneCount === totalCount
 
+  const prevAllDone = useRef(allDone)
+
+  useEffect(() => {
+    if (totalCount > 0 && prevAllDone.current !== allDone) {
+      if (allDone && !day.is_completed) {
+        upsertDayTask.mutate({
+          missionId,
+          dayNumber: day.day_number,
+          patch: { is_completed: true },
+        })
+      } else if (!allDone && day.is_completed) {
+        upsertDayTask.mutate({
+          missionId,
+          dayNumber: day.day_number,
+          patch: { is_completed: false },
+        })
+      }
+      prevAllDone.current = allDone
+    }
+  }, [allDone, day.is_completed, totalCount, missionId, day.day_number, upsertDayTask])
+
   async function toggleDayComplete() {
+    if (!allDone) return // Cannot manually complete if not all problems are done
     try {
       await upsertDayTask.mutateAsync({
         missionId,
@@ -313,14 +334,6 @@ function ProblemDayCard({ day, missionId, startDate, statusFilter, search, ratin
     }
   }
 
-  async function markAllDone() {
-    const pending = day.problem_items.filter((p) => p.status !== 'Done')
-    for (const p of pending) {
-      await updateProblem.mutateAsync({ problemId: p.problem_id, patch: { status: 'Done' } })
-    }
-    toast.success(`Marked ${pending.length} problems done`)
-  }
-
   return (
     <div
       className={`rounded-[14px] border transition-all duration-150 hover:border-white/[0.12] ${day.is_completed ? 'border-green-500/20' : ''}`}
@@ -329,13 +342,14 @@ function ProblemDayCard({ day, missionId, startDate, statusFilter, search, ratin
       <div className="flex items-center w-full">
         {/* Day completion checkbox */}
         <label
-          className="flex items-center justify-center w-10 h-10 cursor-pointer shrink-0 ml-1"
-          title={day.is_completed ? 'Mark incomplete' : 'Mark day complete'}
+          className={`flex items-center justify-center w-10 h-10 shrink-0 ml-1 ${allDone ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}
+          title={!allDone ? 'Complete all problems to finish this day' : day.is_completed ? 'Mark incomplete' : 'Mark day complete'}
         >
           <input
             type="checkbox"
             checked={day.is_completed}
             onChange={toggleDayComplete}
+            disabled={!allDone}
             className="sr-only"
           />
           <span
@@ -402,14 +416,6 @@ function ProblemDayCard({ day, missionId, startDate, statusFilter, search, ratin
               {filteredProblems.map((problem) => (
                 <ProblemCard key={problem.problem_id} problem={problem} />
               ))}
-              {doneCount < totalCount && (
-                <button
-                  onClick={markAllDone}
-                  className="text-[12px] text-[#65738A] hover:text-[#22C55E] transition-colors"
-                >
-                  Mark all done
-                </button>
-              )}
             </>
           ) : (
             <p className="text-[12px] text-[#65738A] italic">
@@ -653,36 +659,6 @@ function ScheduleContent() {
   const doneCount = useMemo(() => allProblems.filter((p) => p.status === 'Done').length, [allProblems])
   const filtersActive = search || ratingMin || ratingMax || statusFilter !== 'All'
   const hasRealDays = useMemo(() => dayTasks.length > 0, [dayTasks])
-
-  // Process days for display using useMemo to avoid recomputing on every render
-  const displayedDays = useMemo(() => {
-    let daysToProcess = allDays
-
-    if (viewMode === 'single') {
-      daysToProcess = daysToProcess.filter((day) => day.day_number === activeDayNumber)
-    }
-
-    return daysToProcess.filter((day) => {
-      const isVirtual = day.day_task_id.startsWith('virtual-')
-      const isRest = !isVirtual && day.problem_items.length === 0 && !isContestDay(day)
-
-      if (filtersActive && !isContestDay(day) && day.problem_items.length > 0) {
-        const matchCount = day.problem_items.filter((p) => {
-          if (statusFilter !== 'All' && p.status !== statusFilter) return false
-          if (search && !p.title.toLowerCase().includes(search.toLowerCase())) return false
-          if (ratingMin && p.difficulty_rating !== null && p.difficulty_rating < Number(ratingMin)) return false
-          if (ratingMax && p.difficulty_rating !== null && p.difficulty_rating > Number(ratingMax)) return false
-          return true
-        }).length
-        if (matchCount === 0) return false
-      }
-
-      if (isVirtual && !showRestDays) return false
-      if (isRest && !showRestDays) return false
-
-      return true
-    })
-  }, [allDays, viewMode, activeDayNumber, filtersActive, showRestDays, statusFilter, search, ratingMin, ratingMax])
 
   return (
     <div className="flex flex-col h-full page-enter">
