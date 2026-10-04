@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMissions, useContestLogs, useCreateContestLog, useUpdateMissionStatus, useUserPlatformRatings } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
 import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
-import { ERROR_CATEGORIES, PLATFORM_COLORS, PLATFORMS } from '@/lib/types'
+import { ERROR_CATEGORIES, PLATFORM_COLORS, PLATFORMS, type ContestLog } from '@/lib/types'
 import { format, parseISO, addDays } from 'date-fns'
 import { toast } from 'sonner'
 
@@ -67,7 +67,7 @@ function EmptyContests() {
 
 export default function ContestsPage() {
   const { activeMissionId, setActiveMissionId } = useAppStore()
-  const { data: missions = [] } = useMissions()
+  const { data: missions = [], isSuccess: isMissionsLoaded } = useMissions()
   const { data: contestLogs = [], isLoading } = useContestLogs(activeMissionId)
   const { data: ratings = [] } = useUserPlatformRatings()
   const createLog = useCreateContestLog()
@@ -76,10 +76,18 @@ export default function ContestsPage() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState<ContestFormState>(DEFAULT_FORM)
 
-  if (!activeMissionId && missions.length > 0) {
-    const first = missions.find((m) => m.status === 'Active') ?? missions[0]
-    setActiveMissionId(first.mission_id)
-  }
+  useEffect(() => {
+    if (!isMissionsLoaded) return
+    const current = missions.find((m) => m.mission_id === activeMissionId)
+    if (!current) {
+      if (missions.length === 0) {
+        if (activeMissionId !== null) setActiveMissionId(null)
+      } else {
+        const first = missions.find((m) => m.status === 'Active') ?? missions[0]
+        setActiveMissionId(first.mission_id)
+      }
+    }
+  }, [activeMissionId, missions, isMissionsLoaded, setActiveMissionId])
 
   function patchForm(patch: Partial<ContestFormState>) {
     setForm((prev) => ({ ...prev, ...patch }))
@@ -126,7 +134,7 @@ export default function ContestsPage() {
         total_time_mins: form.total_time_mins ? Number(form.total_time_mins) : null,
         penalties: 0,
         error_entries: form.errors,
-      } as any)
+      } as unknown as ContestLog)
 
       // Auto-complete mission when target rating is reached within the mission's duration
       const activeMission = missions.find((m) => m.mission_id === activeMissionId)
@@ -150,8 +158,8 @@ export default function ContestsPage() {
       toast.success('Contest log saved')
       setShowForm(false)
       setForm(DEFAULT_FORM)
-    } catch (err: any) {
-      toast.error(err?.message ?? 'Failed to save contest log')
+    } catch (err: unknown) {
+      toast.error((err as Error)?.message ?? 'Failed to save contest log')
     }
   }
 

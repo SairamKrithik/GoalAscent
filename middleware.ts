@@ -27,7 +27,9 @@ export async function middleware(request: NextRequest) {
     },
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  // Use getSession here to decode the JWT cookie instantly instead of making a network call
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
 
   const { pathname } = request.nextUrl
 

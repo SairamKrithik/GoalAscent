@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { useProfile, useProfileStats, useMissions, useCreateMission, useUpdateProfile, useDeleteMission, useImportSchedule, useUserPlatformRatings, useUpsertUserPlatformRating, useTogglePinRating, useDeletePlatformHistory, type CreateMissionInput } from '@/lib/queries'
+import { useProfile, useProfileStats, useMissions, useCreateMission, useUpdateProfile, useImportSchedule, useUserPlatformRatings, useUpsertUserPlatformRating, useTogglePinRating, useDeletePlatformHistory, useUpdateMissionStatus, useSharedMissions, useToggleMissionShare, useSharedMissionSchedule, type CreateMissionInput } from '@/lib/queries'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAppStore } from '@/lib/store'
 import { KPICard } from '@/components/KPICard'
@@ -11,11 +11,13 @@ import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Dialog } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { validateImport, IMPORT_EXAMPLE } from '@/lib/importUtils'
 import type { ImportedMission } from '@/lib/types'
 import { PLATFORMS } from '@/lib/types'
+import { useAllContestLogs } from '@/lib/queries'
+import { GlobalRatingChart } from '@/components/GlobalRatingChart'
 
 interface NewMissionForm {
   platform: string
@@ -49,22 +51,42 @@ export default function ProfilePage() {
   const { data: stats } = useProfileStats()
   const { data: ratings } = useUserPlatformRatings()
   const { data: missions } = useMissions()
+  const { data: allContestLogs = [] } = useAllContestLogs()
   const createMission = useCreateMission()
   const updateProfile = useUpdateProfile()
   const togglePinRating = useTogglePinRating()
   const upsertRating = useUpsertUserPlatformRating()
   const deletePlatformHistory = useDeletePlatformHistory()
-  const deleteMission = useDeleteMission()
+  const updateMissionStatus = useUpdateMissionStatus()
   const importSchedule = useImportSchedule()
+  const toggleMissionShare = useToggleMissionShare()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   const { activeMissionId, setActiveMissionId } = useAppStore()
 
   const qc = useQueryClient()
   const [showNewMission, setShowNewMission] = useState(false)
   const [missionForm, setMissionForm] = useState<NewMissionForm>(DEFAULT_MISSION_FORM)
+  const [scheduleSource, setScheduleSource] = useState<'ai' | 'json'>('ai')
   const [scheduleJson, setScheduleJson] = useState('')
   const [showExample, setShowExample] = useState(false)
+  const [aiRole, setAiRole] = useState('SDE-1')
+  const [aiGoal, setAiGoal] = useState('Interview Prep')
+  const [aiPlatform, setAiPlatform] = useState('LeetCode')
+  const [aiGenerating, setAiGenerating] = useState(false)
+  const [aiGeneratedSchedule, setAiGeneratedSchedule] = useState<ImportedMission | null>(null)
+
+  const [showBrowseModal, setShowBrowseModal] = useState(false)
+  const [browseSearch, setBrowseSearch] = useState('')
+  const [browsePage, setBrowsePage] = useState(0)
+  const [selectedSharedMissionId, setSelectedSharedMissionId] = useState<string | null>(null)
+
+  const { data: sharedMissionsData } = useSharedMissions(browseSearch, browsePage, 10)
+  const sharedMissions = sharedMissionsData?.data
+  const sharedMissionsCount = sharedMissionsData?.count || 0
+  const { data: sharedMissionSchedule } = useSharedMissionSchedule(selectedSharedMissionId)
+
   const [signingOut, setSigningOut] = useState(false)
   const [showRatingsModal, setShowRatingsModal] = useState(false)
   const [addRatingPlatform, setAddRatingPlatform] = useState('Codeforces')
@@ -72,10 +94,11 @@ export default function ProfilePage() {
   const [showAddRatingForm, setShowAddRatingForm] = useState(false)
   const [editingRatingPlatform, setEditingRatingPlatform] = useState<string | null>(null)
   const [editingRatingValue, setEditingRatingValue] = useState('')
+  const [selectedChartPlatform, setSelectedChartPlatform] = useState<string>('')
 
   // Profile editing state
   const [deletePlatformInfo, setDeletePlatformInfo] = useState<{ platform: string } | null>(null)
-  const [deleteMissionInfo, setDeleteMissionInfo] = useState<{ missionId: string; title: string } | null>(null)
+  const [abandonMissionInfo, setAbandonMissionInfo] = useState<{ missionId: string; title: string } | null>(null)
   const [editingName, setEditingName] = useState(false)
   const [nameValue, setNameValue] = useState('')
 
@@ -95,6 +118,31 @@ export default function ProfilePage() {
       }
     }
   }, [missionForm.platform, ratings, showNewMission]);
+
+  // Open new mission dialog when navigated here with ?newMission=1
+  useEffect(() => {
+    if (searchParams.get('newMission') === '1') {
+      setMissionForm(DEFAULT_MISSION_FORM)
+      setScheduleJson('')
+      setShowExample(false)
+      setShowNewMission(true)
+      router.replace('/profile')
+    }
+  }, [searchParams, router])
+
+  // Default the chart platform to the first platform that has any contest log with a rating,
+  // falling back to the first entry in ratings if no logs exist yet.
+  useEffect(() => {
+    if (selectedChartPlatform) return
+    const firstWithLog = allContestLogs.find((l) => l.new_rating !== null)?.platform
+    if (firstWithLog) {
+      setSelectedChartPlatform(firstWithLog)
+      return
+    }
+    if (ratings && ratings.length > 0) {
+      setSelectedChartPlatform(ratings[0].platform)
+    }
+  }, [allContestLogs, ratings, selectedChartPlatform])
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
@@ -167,6 +215,44 @@ export default function ProfilePage() {
     setMissionForm((prev) => ({ ...prev, ...patch }))
   }
 
+  async function handleGenerateAISchedule() {
+    if (!aiRole || !aiGoal || !aiPlatform) {
+      toast.error('Please select role, goal, and platform')
+      return
+    }
+    const days = parseInt(missionForm.duration_days, 10)
+    if (isNaN(days) || days < 10) {
+      toast.error('Set a duration of at least 10 days in the mission form above')
+      return
+    }
+    setAiGenerating(true)
+    setAiGeneratedSchedule(null)
+    try {
+      const res = await fetch('/api/generate-schedule', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          role: aiRole,
+          goal: aiGoal,
+          platform: aiPlatform,
+          numDays: days,
+          startDate: missionForm.start_date,
+          ...(missionForm.baseline_rating ? { baselineRating: Number(missionForm.baseline_rating) } : {}),
+          ...(missionForm.target_rating ? { targetRating: Number(missionForm.target_rating) } : {}),
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'AI generation failed')
+      setAiGeneratedSchedule(data.schedule)
+      setMissionForm((prev) => ({ ...prev, duration_days: String(data.schedule.days.length) }))
+      toast.success(`Schedule generated: ${data.schedule.days.length} days ready!`)
+    } catch (err: unknown) {
+      toast.error((err as Error).message)
+    } finally {
+      setAiGenerating(false)
+    }
+  }
+
   async function handleCreateMission() {
     if (!missionForm.title) { toast.error('Mission title is required'); return }
     if (!missionForm.duration_days || Number(missionForm.duration_days) < 1) {
@@ -174,17 +260,25 @@ export default function ProfilePage() {
     }
 
     let validatedSchedule: ImportedMission | null = null
-    if (!scheduleJson.trim()) {
-      toast.error('Schedule JSON is required to create a mission')
-      return
-    }
 
-    try {
-      const parsed = JSON.parse(scheduleJson)
-      validatedSchedule = validateImport(parsed)
-    } catch (err: unknown) {
-      toast.error(`Schedule JSON error: ${(err as Error).message}`)
-      return
+    if (scheduleSource === 'ai') {
+      if (!aiGeneratedSchedule) {
+        toast.error('Generate a schedule first using the AI assistant')
+        return
+      }
+      validatedSchedule = aiGeneratedSchedule
+    } else {
+      if (!scheduleJson.trim()) {
+        toast.error('Schedule JSON is required to create a mission')
+        return
+      }
+      try {
+        const parsed = JSON.parse(scheduleJson)
+        validatedSchedule = validateImport(parsed)
+      } catch (err: unknown) {
+        toast.error(`Schedule JSON error: ${(err as Error).message}`)
+        return
+      }
     }
 
     try {
@@ -200,6 +294,7 @@ export default function ProfilePage() {
         status: 'Active',
         forked_from_mission_id: null,
         forked_from_template_id: null,
+        is_shared: false,
         platform: missionForm.platform,
       } satisfies CreateMissionInput)
 
@@ -215,10 +310,95 @@ export default function ProfilePage() {
       setShowNewMission(false)
       setMissionForm(DEFAULT_MISSION_FORM)
       setScheduleJson('')
+      setScheduleSource('ai')
+      setAiRole('SDE-1')
+      setAiGoal('Interview Prep')
+      setAiPlatform('LeetCode')
+      setAiGeneratedSchedule(null)
       setActiveMissionId(newMission.mission_id)
       router.push('/dashboard')
     } catch (err: any) {
       toast.error(err?.message ?? 'Failed to create mission')
+    }
+  }
+
+  async function handleLockInMission() {
+    if (!selectedSharedMissionId) {
+      toast.error('Select a shared mission to fork')
+      return
+    }
+    const sharedMissionData = sharedMissions?.find(sm => sm.mission_id === selectedSharedMissionId)
+    if (!sharedMissionData) {
+      toast.error('Mission data not found')
+      return
+    }
+    if (!sharedMissionSchedule || sharedMissionSchedule.length === 0) {
+      toast.error('Selected mission has no schedule to fork')
+      return
+    }
+
+    const validatedSchedule: ImportedMission = {
+      days: sharedMissionSchedule.map((dt) => ({
+        day_number: dt.day_number,
+        stage: dt.stage ?? undefined,
+        topic: dt.topic ?? undefined,
+        primary_skill: dt.primary_skill ?? undefined,
+        time_target: dt.time_target ?? undefined,
+        checkpoint: dt.checkpoint ?? undefined,
+        drill_type: dt.drill_type ?? undefined,
+        problems: (dt.problem_items ?? []).map((p) => ({
+          slot: p.slot ?? undefined,
+          title: p.title,
+          platform: p.platform,
+          problem_number: p.problem_number ?? undefined,
+          difficulty_rating: p.difficulty_rating ?? undefined,
+          url: p.url,
+          rationale: p.rationale ?? undefined,
+          topic_tags: p.topic_tags,
+        })),
+      })),
+    }
+
+    try {
+      const newMission = await createMission.mutateAsync({
+        title: sharedMissionData.title + ' (Forked)',
+        description: sharedMissionData.description,
+        duration_days: sharedMissionData.duration_days,
+        baseline_rating: sharedMissionData.baseline_rating,
+        target_rating: sharedMissionData.target_rating,
+        daily_time_budget: sharedMissionData.daily_time_budget,
+        start_date: new Date().toISOString().slice(0, 10), // start today
+        rest_days: [],
+        status: 'Active',
+        forked_from_mission_id: selectedSharedMissionId,
+        forked_from_template_id: null,
+        is_shared: false,
+        platform: sharedMissionData.platform,
+      } satisfies CreateMissionInput)
+
+      await importSchedule.mutateAsync({
+        missionId: newMission.mission_id,
+        startDate: newMission.start_date,
+        imported: validatedSchedule,
+      })
+
+      toast.success('Forked mission successfully!')
+      setShowBrowseModal(false)
+      setBrowseSearch('')
+      setSelectedSharedMissionId(null)
+      setActiveMissionId(newMission.mission_id)
+      router.push('/dashboard')
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to fork mission')
+    }
+  }
+
+  async function handleToggleShare(missionId: string, currentIsShared: boolean) {
+    try {
+      await toggleMissionShare.mutateAsync({ missionId, isShared: !currentIsShared })
+      toast.success(!currentIsShared ? 'Mission shared publicly' : 'Mission unshared')
+    } catch (err: any) {
+      toast.error(err?.message ?? 'Failed to update share status')
     }
   }
 
@@ -281,25 +461,29 @@ export default function ProfilePage() {
     setSigningOut(true)
     const supabase = createClient()
     await supabase.auth.signOut()
-    router.push('/login')
+    qc.clear() // Clear all React Query data to prevent crossover between accounts
+    setActiveMissionId(null) // Reset local mission selection
+    // Use window.location to force a full hard reload, entirely wiping JS memory,
+    // Next.js router cache, React Query cache, and singletons.
+    window.location.href = '/login'
   }
 
-  async function handleDeleteMission(missionId: string, title: string) {
-    setDeleteMissionInfo({ missionId, title })
+  async function handleAbandonMission(missionId: string, title: string) {
+    setAbandonMissionInfo({ missionId, title })
   }
 
-  async function performDeleteMission() {
-    if (!deleteMissionInfo) return
-    const { missionId } = deleteMissionInfo
+  async function performAbandonMission() {
+    if (!abandonMissionInfo) return
+    const { missionId } = abandonMissionInfo
     try {
-      await deleteMission.mutateAsync(missionId)
+      await updateMissionStatus.mutateAsync({ missionId, status: 'Archived' })
       if (activeMissionId === missionId) {
         setActiveMissionId(null)
       }
-      toast.success('Mission deleted completely')
-      setDeleteMissionInfo(null)
+      toast.success('Mission abandoned')
+      setAbandonMissionInfo(null)
     } catch (err: any) {
-      toast.error(err?.message ?? 'Failed to delete mission')
+      toast.error(err?.message ?? 'Failed to abandon mission')
     }
   }
 
@@ -472,8 +656,49 @@ export default function ProfilePage() {
         </div>
       )}
 
-      
+      {/* Global Rating Chart */}
+      {(() => {
+        const logPlatforms = Array.from(
+          new Set(allContestLogs.filter((l) => l.new_rating !== null).map((l) => l.platform))
+        )
+        const ratingPlatforms = (ratings ?? []).map((r) => r.platform)
+        const platformOptions = Array.from(new Set([...logPlatforms, ...ratingPlatforms]))
 
+        if (platformOptions.length === 0) return null
+
+        const activePlatform = selectedChartPlatform || platformOptions[0]
+
+        return (
+          <div
+            className="rounded-[16px] border p-5"
+            style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}
+          >
+            <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+              <p className="text-[14px] font-semibold text-[#F5F7FA]">Global Rating History</p>
+              {platformOptions.length > 1 && (
+                <select
+                  className="rounded-[8px] border px-2.5 py-1 text-[12px] text-[#F5F7FA] outline-none focus:ring-2 focus:ring-blue-500/30"
+                  style={{
+                    background: '#080D18',
+                    borderColor: 'rgba(255,255,255,0.10)',
+                    colorScheme: 'dark',
+                  }}
+                  value={activePlatform}
+                  onChange={(e) => setSelectedChartPlatform(e.target.value)}
+                >
+                  {platformOptions.map((p) => (
+                    <option key={p}>{p}</option>
+                  ))}
+                </select>
+              )}
+              {platformOptions.length === 1 && (
+                <span className="text-[12px] text-[#65738A]">{activePlatform}</span>
+              )}
+            </div>
+            <GlobalRatingChart allContestLogs={allContestLogs} platform={activePlatform} />
+          </div>
+        )
+      })()}
 
       {/* New mission CTA */}
       <div className="rounded-[16px] border p-5 flex items-center justify-between gap-4"
@@ -481,22 +706,49 @@ export default function ProfilePage() {
         <div>
           <p className="text-[14px] font-semibold text-[#F5F7FA]">New Mission</p>
           <p className="text-[12px] text-[#65738A] mt-0.5">
-            Create a time-boxed training plan with a rating target
+            {missions?.some((m) => m.status === 'Active')
+              ? 'Abandon your active mission before starting a new one'
+              : 'Create a time-boxed training plan with a rating target'}
           </p>
         </div>
-        <Button
-          variant="primary"
-          size="sm"
-          onClick={() => {
-            setMissionForm(DEFAULT_MISSION_FORM)
-            setScheduleJson('')
-            setShowExample(false)
-            setShowNewMission(true)
-          }}
-          className="flex-none"
-        >
-          + New Mission
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              if (missions?.some((m) => m.status === 'Active')) {
+                toast.error('Abandon your active mission first before starting a new one')
+                return
+              }
+              setBrowseSearch('')
+              setBrowsePage(0)
+              setSelectedSharedMissionId(null)
+              setShowBrowseModal(true)
+            }}
+            className="flex-none"
+            disabled={missions?.some((m) => m.status === 'Active')}
+          >
+            Browse Shared
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => {
+              if (missions?.some((m) => m.status === 'Active')) {
+                toast.error('Abandon your active mission first before creating a new one')
+                return
+              }
+              setMissionForm(DEFAULT_MISSION_FORM)
+              setScheduleJson('')
+              setShowExample(false)
+              setShowNewMission(true)
+            }}
+            className="flex-none"
+            disabled={missions?.some((m) => m.status === 'Active')}
+          >
+            + New Mission
+          </Button>
+        </div>
       </div>
 
       {/* Achievements link */}
@@ -533,15 +785,30 @@ export default function ProfilePage() {
                     {m.status} • {m.duration_days} Days • {m.start_date.slice(0, 10)} • {m.platform || 'Codeforces'}
                   </p>
                 </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => handleDeleteMission(m.mission_id, m.title)}
-                  disabled={deleteMission.isPending}
-                  className="text-red-400 hover:text-red-300 hover:bg-red-950/30 border-red-900/30"
-                >
-                  Delete Mission
-                </Button>
+                {m.status === 'Active' && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleAbandonMission(m.mission_id, m.title)}
+                    disabled={updateMissionStatus.isPending}
+                    className="text-red-400 hover:text-red-300 hover:bg-red-950/30 border-red-900/30"
+                  >
+                    Abandon Mission
+                  </Button>
+                )}
+                {!m.forked_from_mission_id && (
+                  <button
+                    onClick={() => handleToggleShare(m.mission_id, m.is_shared)}
+                    disabled={toggleMissionShare.isPending}
+                    className="flex-none text-[12px] font-medium px-3 py-1.5 rounded-[8px] transition-all"
+                    style={m.is_shared
+                      ? { background: 'rgba(34,197,94,0.1)', color: '#22C55E', border: '1px solid rgba(34,197,94,0.2)' }
+                      : { background: 'rgba(255,255,255,0.04)', color: '#65738A', border: '1px solid rgba(255,255,255,0.07)' }
+                    }
+                  >
+                    {m.is_shared ? 'Shared' : 'Share'}
+                  </button>
+                )}
               </div>
             ))
           )}
@@ -560,14 +827,14 @@ export default function ProfilePage() {
           isLoading={deletePlatformHistory.isPending}
         />
       )}
-      {deleteMissionInfo && (
+      {abandonMissionInfo && (
         <ConfirmDialog
-          isOpen={!!deleteMissionInfo}
-          onOpenChange={(open) => !open && setDeleteMissionInfo(null)}
-          title={`Delete Mission: ${deleteMissionInfo.title}`}
-          description="Are you sure you want to delete this mission? This will permanently delete all associated schedule data, problem logs, and contest logs."
-          onConfirm={performDeleteMission}
-          isLoading={deleteMission.isPending}
+          isOpen={!!abandonMissionInfo}
+          onOpenChange={(open) => !open && setAbandonMissionInfo(null)}
+          title={`Abandon Mission: ${abandonMissionInfo.title}`}
+          description="Are you sure you want to abandon this mission? It will be archived and you will be able to start a new mission. Your schedule data, problem logs, and contest logs will be preserved."
+          onConfirm={performAbandonMission}
+          isLoading={updateMissionStatus.isPending}
         />
       )}
 
@@ -696,6 +963,102 @@ export default function ProfilePage() {
         </div>
       </Dialog>
 
+      {/* Browse Shared Missions Dialog */}
+      <Dialog
+        open={showBrowseModal}
+        onClose={() => setShowBrowseModal(false)}
+        title="Browse Shared Missions"
+        size="md"
+      >
+        <div className="space-y-4 px-6 py-5 flex flex-col h-[500px]">
+          <div className="flex-none">
+            <input
+              type="text"
+              className={inputCls}
+              style={inputStyle}
+              placeholder="Search by title or description…"
+              value={browseSearch}
+              onChange={(e) => {
+                setBrowseSearch(e.target.value)
+                setBrowsePage(0)
+                setSelectedSharedMissionId(null)
+              }}
+            />
+          </div>
+
+          <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-2">
+            {!sharedMissions || sharedMissions.length === 0 ? (
+              <p className="text-[13px] text-[#65738A] text-center mt-10">
+                {browseSearch.trim() ? 'No missions match your search.' : 'No shared missions available.'}
+              </p>
+            ) : (
+              sharedMissions.map((sm) => {
+                const isSelected = selectedSharedMissionId === sm.mission_id
+                return (
+                  <button
+                    key={sm.mission_id}
+                    onClick={() => setSelectedSharedMissionId(isSelected ? null : sm.mission_id)}
+                    className="text-left rounded-[10px] p-3 transition-all outline-none"
+                    style={{
+                      background: isSelected ? 'rgba(29,78,216,0.15)' : 'rgba(255,255,255,0.03)',
+                      border: `1px solid ${isSelected ? 'rgba(29,78,216,0.5)' : 'rgba(255,255,255,0.07)'}`,
+                    }}
+                  >
+                    <p className="text-[14px] font-medium text-[#F5F7FA]">{sm.title}</p>
+                    {sm.description && (
+                      <p className="text-[12px] text-[#9AA7BA] mt-1 line-clamp-2">{sm.description}</p>
+                    )}
+                    <p className="text-[11px] text-[#65738A] mt-2 font-medium">
+                      {sm.duration_days} days
+                      {sm.baseline_rating ? ` • ${sm.baseline_rating}` : ''}
+                      {sm.target_rating ? ` → ${sm.target_rating}` : ''}
+                      {sm.platform ? ` • ${sm.platform}` : ''}
+                      {sm.profiles?.display_name ? ` • by ${sm.profiles.display_name}` : ''}
+                    </p>
+                  </button>
+                )
+              })
+            )}
+          </div>
+
+          {/* Pagination Controls */}
+          {sharedMissionsCount > 10 && (
+            <div className="flex-none flex items-center justify-between pt-2 border-t border-white/5">
+              <span className="text-[11px] text-[#65738A]">
+                Showing {browsePage * 10 + 1}-{Math.min((browsePage + 1) * 10, sharedMissionsCount)} of {sharedMissionsCount}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  disabled={browsePage === 0}
+                  onClick={() => setBrowsePage(p => p - 1)}
+                  className="px-2 py-1 text-[11px] font-medium text-[#9AA7BA] disabled:opacity-30 hover:text-white"
+                >
+                  Prev
+                </button>
+                <button
+                  disabled={(browsePage + 1) * 10 >= sharedMissionsCount}
+                  onClick={() => setBrowsePage(p => p + 1)}
+                  className="px-2 py-1 text-[11px] font-medium text-[#9AA7BA] disabled:opacity-30 hover:text-white"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="flex-none flex justify-end gap-2 pt-2 border-t border-white/5">
+            <Button variant="secondary" onClick={() => setShowBrowseModal(false)}>Cancel</Button>
+            <Button
+              variant="primary"
+              onClick={handleLockInMission}
+              disabled={!selectedSharedMissionId || createMission.isPending || importSchedule.isPending}
+            >
+              {createMission.isPending || importSchedule.isPending ? 'Forking…' : 'Lock In'}
+            </Button>
+          </div>
+        </div>
+      </Dialog>
+
 
       {/* New Mission Dialog */}
       <Dialog
@@ -801,32 +1164,116 @@ export default function ProfilePage() {
             />
           </div>
 
+          {/* Schedule source toggle */}
           <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="text-[11px] font-medium text-[#65738A]">Initial Schedule JSON *</label>
-              <button
-                className="text-blue-400 hover:text-blue-300 underline text-[11px]"
-                onClick={() => setShowExample((v) => !v)}
-              >
-                {showExample ? 'Hide example' : 'View format'}
-              </button>
+            <label className={labelCls}>Schedule Source *</label>
+            <div className="flex rounded-[10px] p-0.5 gap-0.5" style={{ background: '#080D18', border: '1px solid rgba(255,255,255,0.07)' }}>
+              {(['ai', 'json'] as const).map((src) => (
+                <button
+                  key={src}
+                  onClick={() => setScheduleSource(src)}
+                  className="flex-1 py-1.5 rounded-[8px] text-[12px] font-medium transition-all duration-150"
+                  style={scheduleSource === src
+                    ? { background: '#1D4ED8', color: '#F5F7FA' }
+                    : { color: '#65738A' }
+                  }
+                >
+                  {src === 'ai' ? '✦ Generate with AI' : 'Import JSON'}
+                </button>
+              ))}
             </div>
-            {showExample && (
-              <pre className="mb-2 overflow-x-auto rounded-[8px] p-3 text-[10px] leading-relaxed font-mono"
-                style={{ background: '#080D18', border: '1px solid rgba(255,255,255,0.07)', color: '#9AA7BA' }}>
-                {IMPORT_EXAMPLE}
-              </pre>
-            )}
-            <textarea
-              rows={4}
-              className={inputCls + ' resize-y font-mono text-[11px]'}
-              style={inputStyle}
-              placeholder={'{\n  "days": [\n    { "day_number": 1, "topic": "...", "problems": [...] }\n  ]\n}'}
-              value={scheduleJson}
-              onChange={(e) => setScheduleJson(e.target.value)}
-              spellCheck={false}
-            />
           </div>
+
+          {scheduleSource === 'ai' ? (
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className={labelCls}>Role</label>
+                  <select className={inputCls} style={inputStyle} value={aiRole} onChange={(e) => setAiRole(e.target.value)}>
+                    {['SDE-1', 'SDE-2', 'Frontend', 'Backend', 'Full-Stack', 'Competitive Programmer'].map((r) => (
+                      <option key={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className={labelCls}>Goal</label>
+                  <select className={inputCls} style={inputStyle} value={aiGoal} onChange={(e) => setAiGoal(e.target.value)}>
+                    {['Interview Prep', 'Upskilling', 'Competitive Programming', 'Rating Push', 'Foundation Building'].map((g) => (
+                      <option key={g}>{g}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-span-2">
+                  <label className={labelCls}>Platform</label>
+                  <select className={inputCls} style={inputStyle} value={aiPlatform} onChange={(e) => setAiPlatform(e.target.value)}>
+                    {['LeetCode', 'Codeforces', 'AtCoder', 'Both (LeetCode + Codeforces)', 'All Platforms'].map((p) => (
+                      <option key={p}>{p}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <button
+                onClick={handleGenerateAISchedule}
+                disabled={aiGenerating}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-[10px] text-[13px] font-semibold transition-all active:scale-[0.98] disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, #3B82F6, #1D4ED8)', color: '#fff' }}
+              >
+                {aiGenerating ? (
+                  <>
+                    <span className="w-3.5 h-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+                    Generating…
+                  </>
+                ) : (
+                  <>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                    Generate Schedule
+                  </>
+                )}
+              </button>
+
+              {aiGeneratedSchedule && (
+                <div className="flex items-center gap-2 px-3 py-2 rounded-[8px]"
+                  style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  <span className="text-[12px] text-[#22C55E] font-medium">
+                    {aiGeneratedSchedule.days.length}-day schedule ready — click Create Mission to import
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-[11px] font-medium text-[#65738A]">Schedule JSON *</label>
+                <button
+                  className="text-blue-400 hover:text-blue-300 underline text-[11px]"
+                  onClick={() => setShowExample((v) => !v)}
+                >
+                  {showExample ? 'Hide example' : 'View format'}
+                </button>
+              </div>
+              {showExample && (
+                <pre className="mb-2 overflow-x-auto rounded-[8px] p-3 text-[10px] leading-relaxed font-mono"
+                  style={{ background: '#080D18', border: '1px solid rgba(255,255,255,0.07)', color: '#9AA7BA' }}>
+                  {IMPORT_EXAMPLE}
+                </pre>
+              )}
+              <textarea
+                rows={4}
+                className={inputCls + ' resize-y font-mono text-[11px]'}
+                style={inputStyle}
+                placeholder={'{\n  "days": [\n    { "day_number": 1, "topic": "...", "problems": [...] }\n  ]\n}'}
+                value={scheduleJson}
+                onChange={(e) => setScheduleJson(e.target.value)}
+                spellCheck={false}
+              />
+            </div>
+          )}
 
           <div className="flex justify-end gap-2 pt-1">
             <Button variant="secondary" onClick={() => { setShowNewMission(false); setScheduleJson(''); setShowExample(false); }}>Cancel</Button>

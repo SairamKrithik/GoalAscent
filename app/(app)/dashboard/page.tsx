@@ -2,7 +2,7 @@
 
 import { useMissions, useMission, useDayTasks, useContestLogs, useReviewQueue, useUserPlatformRatings, useProfile } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
-import { MissionSwitcher } from '@/components/MissionSwitcher'
+import { useRouter } from 'next/navigation'
 import { KPICard } from '@/components/KPICard'
 import { RatingChart } from '@/components/RatingChart'
 import { Progress } from '@/components/ui/progress'
@@ -16,7 +16,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import ReactConfetti from 'react-confetti'
 import { toPng } from 'html-to-image'
 import type { Mission, ContestLog } from '@/lib/types'
-import { ExportCard, buildExportChartData } from '@/components/ExportCard'
+import { ExportCard } from '@/components/ExportCard'
 
 const CELEBRATED_KEY = 'celebrated_missions'
 
@@ -55,9 +55,13 @@ function CelebrationModal({ mission, contestLogs, achievedRating, displayName, a
   const [confettiRunning, setConfettiRunning] = useState(true)
 
   useEffect(() => {
+    // Disable lint error on next line as it's just initializing viewport size for canvas
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setWinSize({ w: window.innerWidth, h: window.innerHeight })
     const t = setTimeout(() => setConfettiRunning(false), 6000)
     return () => clearTimeout(t)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function handleDownload() {
@@ -215,8 +219,12 @@ function EmptyChartState() {
 
 export default function DashboardPage() {
   const { activeMissionId, setActiveMissionId } = useAppStore()
-  const { data: missions = [] } = useMissions()
-  const { data: mission } = useMission(activeMissionId)
+  const router = useRouter()
+  // isSuccess tells us if the initial load is fully complete
+  const { data: missions = [], isSuccess: isMissionsLoaded } = useMissions()
+  const { data: missionData } = useMission(activeMissionId)
+  // Only show mission content when the selected mission is Active
+  const mission = missionData?.status === 'Active' ? missionData : undefined
   const { data: dayTasks = [] } = useDayTasks(activeMissionId)
   const { data: contestLogs = [] } = useContestLogs(activeMissionId)
   const { data: reviewQueue = [] } = useReviewQueue()
@@ -227,13 +235,20 @@ export default function DashboardPage() {
 
   const pinnedRatings = ratings.filter(r => r.is_pinned).slice(0, 2)
 
-  // Auto-select first active mission if none set
+  // Auto-select the active mission; if the stored ID is stale or points to a non-Active mission, clear it
   useEffect(() => {
-    if (!activeMissionId && missions.length > 0) {
-      const firstActive = missions.find((m) => m.status === 'Active') ?? missions[0]
-      setActiveMissionId(firstActive.mission_id)
+    if (!isMissionsLoaded) return
+    const activeMissions = missions.filter((m) => m.status === 'Active')
+    if (activeMissions.length === 0) {
+      // No active mission exists — clear selection so dashboard shows the empty state
+      if (activeMissionId !== null) setActiveMissionId(null)
+      return
     }
-  }, [activeMissionId, missions, setActiveMissionId])
+    const current = activeMissions.find((m) => m.mission_id === activeMissionId)
+    if (!current) {
+      setActiveMissionId(activeMissions[0].mission_id)
+    }
+  }, [activeMissionId, missions, isMissionsLoaded, setActiveMissionId])
 
   // Celebration: fire once when the user reaches target rating for a given mission
   useEffect(() => {
@@ -241,6 +256,7 @@ export default function DashboardPage() {
     const latestRating = contestLogs[contestLogs.length - 1].new_rating
     if (latestRating === null || latestRating < mission.target_rating) return
     if (getCelebrated().has(mission.mission_id)) return
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowCelebration(true)
   }, [mission, contestLogs])
 
@@ -325,14 +341,6 @@ export default function DashboardPage() {
               ? `Started ${format(parseISO(mission.start_date), 'MMM d, yyyy')} · ${mission.duration_days}-day mission`
               : 'Select a mission to begin'}
           </p>
-        </div>
-        <div className="flex items-center shrink-0">
-          <MissionSwitcher
-            missions={missions}
-            activeMissionId={activeMissionId}
-            onSelect={setActiveMissionId}
-            dropdownAlignClass="left-0 sm:left-auto sm:right-0"
-          />
         </div>
       </div>
 
@@ -421,6 +429,8 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {mission ? (
+        <>
       {/* ── KPI grid ─────────────────────── */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <KPICard
@@ -428,12 +438,14 @@ export default function DashboardPage() {
           value={`${completionPct}%`}
           subtext={`${solvedProblems} / ${totalProblems}`}
           accentColor="blue"
+          href="/schedule"
         />
         <KPICard
           label="Current Day"
-          value={mission ? `Day ${currentDay}` : '—'}
-          subtext={mission ? `of ${mission.duration_days}` : ''}
+          value={`Day ${currentDay}`}
+          subtext={`of ${mission.duration_days}`}
           accentColor="amber"
+          href={`/schedule?activeDay=${currentDay}`}
         />
         <KPICard
           label="Flawless"
@@ -446,6 +458,7 @@ export default function DashboardPage() {
           value={reviewQueue.length}
           subtext={reviewQueue.length > 0 ? 'due today' : 'all clear'}
           accentColor={reviewQueue.length > 0 ? 'red' : 'green'}
+          href="/review"
         />
       </div>
 
@@ -457,7 +470,7 @@ export default function DashboardPage() {
           <p className="text-[14px] font-semibold text-[#F5F7FA] mb-4 text-center">Rating Trajectory</p>
           {mission ? (
             <RatingChart
-              contestLogs={contestLogs}
+              contestLogs={contestLogs.filter((l) => l.platform === mission.platform)}
               baseline={mission.baseline_rating ?? 0}
               target={mission.target_rating ?? 0}
               durationDays={mission.duration_days}
@@ -547,6 +560,26 @@ export default function DashboardPage() {
               <Legend wrapperStyle={{ fontSize: 11, color: '#65738A' }} />
             </PieChart>
           </ResponsiveContainer>
+        </div>
+      )}
+        </>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="w-14 h-14 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.15)' }}>
+            <IconTarget />
+          </div>
+          <div className="text-center">
+            <p className="text-[15px] font-semibold text-[#9AA7BA]">No active mission</p>
+            <p className="text-[13px] text-[#65738A] mt-1">Start a new mission to track your progress</p>
+          </div>
+          <button
+            onClick={() => router.push('/profile?newMission=1')}
+            className="mt-1 px-5 py-2.5 rounded-[12px] text-[14px] font-semibold transition-opacity hover:opacity-90"
+            style={{ background: 'linear-gradient(135deg, #3B82F6, #1D4ED8)', color: '#fff' }}
+          >
+            + Create Mission
+          </button>
         </div>
       )}
       </div>

@@ -14,7 +14,7 @@ export async function POST() {
         allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
         fileSizeLimit: 2097152, // 2 MB
       })
-      if (error && error.message !== 'Bucket already exists') throw error
+      if (error && (error as Error).message !== 'Bucket already exists') throw error
 
       // Create RLS policies for avatar uploads (owner-scoped path)
       await admin.rpc('exec_sql', {

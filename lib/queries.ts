@@ -13,9 +13,12 @@ export function useMissions() {
   return useQuery({
     queryKey: ['missions'],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
       const { data, error } = await supabase
         .from('missions')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
       if (error) throw error
       return data as Mission[]
@@ -492,8 +495,75 @@ export function useDeleteSchedule() {
     onSuccess: (_, missionId) => {
       qc.invalidateQueries({ queryKey: ['day_tasks', missionId] })
       qc.invalidateQueries({ queryKey: ['contest_logs', missionId] })
-      qc.invalidateQueries({ queryKey: ['review_queue'] }) 
+      qc.invalidateQueries({ queryKey: ['review_queue'] })
     }
+  })
+}
+
+// ─── Mission Sharing ──────────────────────────────────────────────────────────
+
+export interface SharedMission extends Mission {
+  profiles: { display_name: string } | null
+}
+
+// Fetches shared missions with pagination and search
+export function useSharedMissions(search: string = '', page: number = 0, pageSize: number = 10) {
+  return useQuery({
+    queryKey: ['shared_missions', search, page, pageSize],
+    queryFn: async () => {
+      let query = supabase
+        .from('missions')
+        .select('*, profiles(display_name)', { count: 'exact' })
+        .eq('is_shared', true)
+        .order('created_at', { ascending: false })
+        .range(page * pageSize, (page + 1) * pageSize - 1)
+
+      if (search && search.trim()) {
+        const term = `%${search.trim()}%`
+        query = query.or(`title.ilike.${term},description.ilike.${term}`)
+      }
+
+      const { data, error, count } = await query
+      if (error) throw error
+      return { data: data as SharedMission[], count: count || 0 }
+    },
+  })
+}
+
+// Toggles the is_shared flag on a mission the current user owns.
+// Only non-forked missions (forked_from_mission_id IS NULL) should call this.
+export function useToggleMissionShare() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async ({ missionId, isShared }: { missionId: string; isShared: boolean }) => {
+      const { error } = await supabase
+        .from('missions')
+        .update({ is_shared: isShared })
+        .eq('mission_id', missionId)
+      if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['missions'] })
+      qc.invalidateQueries({ queryKey: ['shared_missions'] })
+    },
+  })
+}
+
+// Fetches day_tasks + problem_items for any mission (shared missions are publicly readable via RLS).
+// Used to preview or fork a shared mission's schedule.
+export function useSharedMissionSchedule(missionId: string | null) {
+  return useQuery({
+    queryKey: ['shared_mission_schedule', missionId],
+    enabled: !!missionId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('day_tasks')
+        .select('*, problem_items(*)')
+        .eq('mission_id', missionId!)
+        .order('day_number', { ascending: true })
+      if (error) throw error
+      return data as (DayTask & { problem_items: ProblemItem[] })[]
+    },
   })
 }
 

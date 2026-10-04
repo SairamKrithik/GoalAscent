@@ -21,7 +21,7 @@ create table if not exists public.profiles (
 
 alter table public.profiles enable row level security;
 
-create policy "profiles: owner read"   on public.profiles for select using (auth.uid() = user_id);
+create policy "profiles: public read"  on public.profiles for select using (true);
 create policy "profiles: owner insert" on public.profiles for insert with check (auth.uid() = user_id);
 create policy "profiles: owner update" on public.profiles for update using (auth.uid() = user_id);
 
@@ -44,7 +44,7 @@ create trigger on_auth_user_created
 -- ─── Missions ────────────────────────────────────────────────
 create table if not exists public.missions (
   mission_id              uuid primary key default gen_random_uuid(),
-  user_id                 uuid not null references auth.users(id) on delete cascade,
+  user_id                 uuid not null references public.profiles(user_id) on delete cascade,
   title                   text not null,
   description             text,
   duration_days           integer not null,
@@ -57,6 +57,7 @@ create table if not exists public.missions (
   forked_from_mission_id  uuid references public.missions(mission_id),
   forked_from_template_id uuid,
   share_token             text not null default encode(gen_random_bytes(16), 'hex'),
+  is_shared               boolean not null default false,
   created_at              timestamptz not null default now()
 );
 
@@ -66,6 +67,9 @@ create policy "missions: owner read"   on public.missions for select using (auth
 create policy "missions: owner insert" on public.missions for insert with check (auth.uid() = user_id);
 create policy "missions: owner update" on public.missions for update using (auth.uid() = user_id);
 create policy "missions: owner delete" on public.missions for delete using (auth.uid() = user_id);
+-- Allows any authenticated user to read publicly shared missions (is_shared = true).
+-- Owner-read policy already covers the owner's own unshared missions.
+create policy "missions: public read shared" on public.missions for select using (is_shared = true);
 
 -- ─── Day Tasks ───────────────────────────────────────────────
 create table if not exists public.day_tasks (
@@ -85,7 +89,7 @@ create table if not exists public.day_tasks (
 alter table public.day_tasks enable row level security;
 
 create policy "day_tasks: mission owner read" on public.day_tasks for select
-  using (exists (select 1 from public.missions m where m.mission_id = day_tasks.mission_id and m.user_id = auth.uid()));
+  using (exists (select 1 from public.missions m where m.mission_id = day_tasks.mission_id and (m.user_id = auth.uid() or m.is_shared = true)));
 create policy "day_tasks: mission owner insert" on public.day_tasks for insert
   with check (exists (select 1 from public.missions m where m.mission_id = day_tasks.mission_id and m.user_id = auth.uid()));
 create policy "day_tasks: mission owner update" on public.day_tasks for update
@@ -118,7 +122,7 @@ create table if not exists public.problem_items (
 alter table public.problem_items enable row level security;
 
 create policy "problem_items: mission owner read" on public.problem_items for select
-  using (exists (select 1 from public.missions m where m.mission_id = problem_items.mission_id and m.user_id = auth.uid()));
+  using (exists (select 1 from public.missions m where m.mission_id = problem_items.mission_id and (m.user_id = auth.uid() or m.is_shared = true)));
 create policy "problem_items: mission owner insert" on public.problem_items for insert
   with check (exists (select 1 from public.missions m where m.mission_id = problem_items.mission_id and m.user_id = auth.uid()));
 create policy "problem_items: mission owner update" on public.problem_items for update
@@ -232,6 +236,7 @@ grant select on public.profile_stats to authenticated;
 
 -- ─── Indexes ─────────────────────────────────────────────────
 create index if not exists idx_missions_user_id       on public.missions(user_id);
+create index if not exists idx_missions_is_shared      on public.missions(is_shared) where is_shared = true;
 create index if not exists idx_day_tasks_mission_id   on public.day_tasks(mission_id);
 create index if not exists idx_problem_items_mission  on public.problem_items(mission_id);
 create index if not exists idx_problem_items_day_task on public.problem_items(day_task_id);

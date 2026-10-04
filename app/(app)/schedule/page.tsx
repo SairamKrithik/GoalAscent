@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense, useState, useMemo, useEffect } from 'react'
 import { differenceInCalendarDays, startOfDay, parseISO } from 'date-fns'
 import { useMissions, useDayTasks, useContestLogs, useUpdateProblem, useUpsertDayTask, useCreateContestLog, useDeleteSchedule } from '@/lib/queries'
 import { useAppStore } from '@/lib/store'
-import { MissionSwitcher } from '@/components/MissionSwitcher'
 import { ProblemCard } from '@/components/ProblemCard'
 import { ConfirmDialog } from '@/components/ConfirmDialog'
 import { Button } from '@/components/ui/button'
@@ -521,7 +521,7 @@ function ScheduleHeatmap({
                 background: bg,
                 color: textColor,
                 ringOffsetColor: '#080D18',
-              } as any}
+              } as React.CSSProperties}
             >
               {d.day_number}
             </button>
@@ -557,7 +557,7 @@ function EmptySchedule() {
 
 // ─── Main Schedule Page ───────────────────────────────────────────────────────
 
-export default function SchedulePage() {
+function ScheduleContent() {
   const { activeMissionId, setActiveMissionId } = useAppStore()
   const { data: missions = [] } = useMissions()
   const { data: dayTasks = [], isLoading } = useDayTasks(activeMissionId)
@@ -568,11 +568,23 @@ export default function SchedulePage() {
   const [search, setSearch] = useState('')
   const [ratingMin, setRatingMin] = useState('')
   const [ratingMax, setRatingMax] = useState('')
-  const [deleteScheduleModalOpen, setDeleteScheduleModalOpen] = useState(false)
-  const [actionsOpen, setActionsOpen] = useState(false)
   const [showRestDays, setShowRestDays] = useState(false)
   const [selectedDayNum, setSelectedDayNum] = useState<number | null>(null)
+  const searchParams = useSearchParams()
+  const urlDay = searchParams.get('activeDay')
+
   const [viewMode, setViewMode] = useState<'single' | 'all'>('single')
+
+  // Actions menu state
+    const [deleteScheduleModalOpen, setDeleteScheduleModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (urlDay) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSelectedDayNum(Number(urlDay))
+      setViewMode('single')
+    }
+  }, [urlDay])
 
   useEffect(() => {
     if (!activeMissionId && missions.length > 0) {
@@ -587,8 +599,8 @@ export default function SchedulePage() {
       await deleteSchedule.mutateAsync(activeMissionId)
       toast.success('Schedule deleted')
       setDeleteScheduleModalOpen(false)
-    } catch (err: any) {
-      toast.error(err.message || 'Failed to delete schedule')
+    } catch (err: unknown) {
+      toast.error((err as Error).message || 'Failed to delete schedule')
     }
   }
 
@@ -602,6 +614,8 @@ export default function SchedulePage() {
 
   const allDays = useMemo(() => {
     if (!activeMission) return dayTasks
+    // Only generate virtual days if not in 'single' mode, or if the current active day is virtual.
+    // If viewing single mode, we only need the days that are actually being viewed/rendered in the heatmap.
     const days: typeof dayTasks = []
     for (let n = 1; n <= activeMission.duration_days; n++) {
       const existing = dayTaskMap.get(n)
@@ -633,31 +647,45 @@ export default function SchedulePage() {
     return Math.max(1, Math.min(activeMission.duration_days, diff))
   }, [activeMission])
 
-  useEffect(() => {
-    if (activeMission && selectedDayNum === null) {
-      setSelectedDayNum(currentMissionDay)
-    }
-  }, [activeMission, currentMissionDay, selectedDayNum])
-
   const activeDayNumber = selectedDayNum ?? currentMissionDay
 
-  const allProblems = dayTasks.flatMap((d) => d.problem_items ?? [])
-  const doneCount = allProblems.filter((p) => p.status === 'Done').length
+  const allProblems = useMemo(() => dayTasks.flatMap((d) => d.problem_items ?? []), [dayTasks])
+  const doneCount = useMemo(() => allProblems.filter((p) => p.status === 'Done').length, [allProblems])
   const filtersActive = search || ratingMin || ratingMax || statusFilter !== 'All'
-  const hasRealDays = allDays.some(d => !d.day_task_id.startsWith('virtual-'))
+  const hasRealDays = useMemo(() => dayTasks.length > 0, [dayTasks])
+
+  // Process days for display using useMemo to avoid recomputing on every render
+  const displayedDays = useMemo(() => {
+    let daysToProcess = allDays
+
+    if (viewMode === 'single') {
+      daysToProcess = daysToProcess.filter((day) => day.day_number === activeDayNumber)
+    }
+
+    return daysToProcess.filter((day) => {
+      const isVirtual = day.day_task_id.startsWith('virtual-')
+      const isRest = !isVirtual && day.problem_items.length === 0 && !isContestDay(day)
+
+      if (filtersActive && !isContestDay(day) && day.problem_items.length > 0) {
+        const matchCount = day.problem_items.filter((p) => {
+          if (statusFilter !== 'All' && p.status !== statusFilter) return false
+          if (search && !p.title.toLowerCase().includes(search.toLowerCase())) return false
+          if (ratingMin && p.difficulty_rating !== null && p.difficulty_rating < Number(ratingMin)) return false
+          if (ratingMax && p.difficulty_rating !== null && p.difficulty_rating > Number(ratingMax)) return false
+          return true
+        }).length
+        if (matchCount === 0) return false
+      }
+
+      if (isVirtual && !showRestDays) return false
+      if (isRest && !showRestDays) return false
+
+      return true
+    })
+  }, [allDays, viewMode, activeDayNumber, filtersActive, showRestDays, statusFilter, search, ratingMin, ratingMax])
 
   return (
     <div className="flex flex-col h-full page-enter">
-      {/* Confirm Dialog */}
-      <ConfirmDialog
-        isOpen={deleteScheduleModalOpen}
-        onOpenChange={setDeleteScheduleModalOpen}
-        title="Delete Schedule"
-        description="Are you sure you want to delete the schedule? This will remove all day tasks, problems, and contests for this mission. The mission itself will remain."
-        onConfirm={handleDeleteSchedule}
-        isLoading={deleteSchedule.isPending}
-      />
-
       {/* ── Sticky Header ──────────────────── */}
       <div className="shrink-0 flex items-center gap-2 px-6 pt-6 pb-4"
         style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
@@ -668,58 +696,6 @@ export default function SchedulePage() {
             {doneCount} / {allProblems.length} problems solved
           </p>
         </div>
-
-        {/* Mission switcher */}
-        <div className="shrink-0">
-          <MissionSwitcher missions={missions} activeMissionId={activeMissionId} onSelect={setActiveMissionId} />
-        </div>
-
-        {/* Actions kebab — only when a mission is active */}
-        {activeMissionId && (
-          <div className="relative shrink-0">
-            <button
-              onClick={() => setActionsOpen((o) => !o)}
-              className="flex items-center justify-center w-8 h-8 rounded-[8px] transition-colors duration-150"
-              style={{
-                background: actionsOpen ? 'rgba(255,255,255,0.08)' : 'transparent',
-                border: '1px solid rgba(255,255,255,0.09)',
-                color: '#65738A',
-              }}
-              aria-label="Schedule actions"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="5" r="1.5" /><circle cx="12" cy="12" r="1.5" /><circle cx="12" cy="19" r="1.5" />
-              </svg>
-            </button>
-
-            {actionsOpen && (
-              <>
-                <div className="fixed inset-0 z-10" onClick={() => setActionsOpen(false)} />
-                <div
-                  className="absolute right-0 top-full z-20 mt-1.5 rounded-[12px] py-1.5 overflow-hidden"
-                  style={{
-                    background: '#101827',
-                    border: '1px solid rgba(255,255,255,0.09)',
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
-                    minWidth: '10rem',
-                  }}
-                >
-                  {hasRealDays && (
-                    <button
-                      onClick={() => { setActionsOpen(false); setDeleteScheduleModalOpen(true) }}
-                      className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[13px] text-[#EF4444] hover:bg-[#EF4444]/[0.06] transition-colors duration-100 disabled:opacity-50"
-                    >
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                      </svg>
-                      Delete Schedule
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        )}
       </div>
 
       {/* ── Scrollable Body ────────────────── */}
@@ -826,7 +802,7 @@ export default function SchedulePage() {
         <div className="flex items-center justify-center py-20">
           <div className="w-5 h-5 rounded-full border-2 border-[#3B82F6]/30 border-t-[#3B82F6] animate-spin" />
         </div>
-      ) : allDays.length === 0 || !hasRealDays ? (
+      ) : !activeMission || allDays.length === 0 || !hasRealDays ? (
         <EmptySchedule />
       ) : (
         <div className="space-y-2">
@@ -902,6 +878,30 @@ export default function SchedulePage() {
       )}
       </div>
       </div>
+
+      {/* Delete Schedule Confirmation */}
+      <ConfirmDialog
+        isOpen={deleteScheduleModalOpen}
+        onOpenChange={(open) => setDeleteScheduleModalOpen(open)}
+        onConfirm={handleDeleteSchedule}
+        title="Delete Schedule"
+        description="Are you sure you want to delete this scheduled task plan? This will obliterate all day tasks, problem assignments, and timer logs. The mission itself will remain."
+        confirmText={deleteSchedule.isPending ? 'Deleting...' : 'Delete Schedule'}
+        isLoading={deleteSchedule.isPending}
+      />
     </div>
+  )
+}
+
+
+export default function SchedulePage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-full items-center justify-center">
+        <div className="w-5 h-5 border-2 border-[#3B82F6]/30 border-t-[#3B82F6] rounded-full animate-spin" />
+      </div>
+    }>
+      <ScheduleContent />
+    </Suspense>
   )
 }

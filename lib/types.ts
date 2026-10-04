@@ -59,6 +59,7 @@ export interface Mission {
   forked_from_mission_id: string | null
   forked_from_template_id: string | null
   share_token: string
+  is_shared: boolean
   created_at: string
 }
 

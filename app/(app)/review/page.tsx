@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useReviewQueue, useResolveReview } from '@/lib/queries'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { PLATFORM_COLORS } from '@/lib/types'
+import { PLATFORM_COLORS, type ProblemItem } from '@/lib/types'
 import { format, parseISO } from 'date-fns'
 import { toast } from 'sonner'
 
@@ -48,8 +48,8 @@ export default function ReviewPage() {
     try {
       await resolveReview.mutateAsync({ reviewId, resolvedTag: tag })
       toast.success('Review marked resolved')
-    } catch (err: any) {
-      toast.error(err?.message ?? 'Failed to resolve review')
+    } catch (err: unknown) {
+      toast.error((err as Error)?.message ?? 'Failed to resolve review')
     } finally {
       setResolving(null)
     }
@@ -87,7 +87,7 @@ export default function ReviewPage() {
       ) : (
         <div className="space-y-3">
           {reviewQueue.map((item) => {
-            const problem = (item as any).problem_items
+            const problem = (item as unknown as { problem_items: unknown }).problem_items as ProblemItem
             if (!problem) return null
             const platformColor = PLATFORM_COLORS[problem.platform] ?? '#6B7280'
             const chosen = selectedTag[item.review_id] ?? ''

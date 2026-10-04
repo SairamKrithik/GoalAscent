@@ -1,6 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 interface KPICardProps {
   label: string
@@ -9,6 +10,7 @@ interface KPICardProps {
   icon?: React.ReactNode
   accentColor?: 'blue' | 'green' | 'amber' | 'red' | 'gold'
   className?: string
+  href?: string
 }
 
 const accentTextMap = {
@@ -27,8 +29,28 @@ const accentDotMap = {
   gold:  'bg-[#FBBF24]',
 }
 
-export function KPICard({ label, value, subtext, accentColor = 'blue', className }: KPICardProps) {
-  return (
+export function KPICard({ label, value, subtext, accentColor = 'blue', className, href }: KPICardProps) {
+  return href ? (
+    <Link href={href} className={cn('block transition-opacity hover:opacity-80', className)}>
+      <div
+        className="flex flex-col gap-3 p-4 rounded-[14px] border h-full focus-visible:ring-2 focus-visible:ring-blue-500/50 outline-none"
+        style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}
+      >
+        <div className="flex items-center gap-2">
+          <span className={cn('w-1.5 h-1.5 rounded-full flex-none', accentDotMap[accentColor])} />
+          <span className="text-[12px] font-medium text-[#65738A]">{label}</span>
+        </div>
+        <div className="count-up">
+          <p className={cn('text-[26px] font-bold font-mono leading-none tracking-tight', accentTextMap[accentColor])}>
+            {value}
+          </p>
+          {subtext && (
+            <p className="mt-1.5 text-[12px] text-[#65738A]">{subtext}</p>
+          )}
+        </div>
+      </div>
+    </Link>
+  ) : (
     <div
       className={cn('flex flex-col gap-3 p-4 rounded-[14px] border', className)}
       style={{ background: '#101827', borderColor: 'rgba(255,255,255,0.07)' }}
